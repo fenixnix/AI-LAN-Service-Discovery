@@ -55,7 +55,11 @@ for service in services:
 
 启动服务：
 ```bash
+# 使用系统安装的命令
 ai-discover-agent --config service_config.json
+
+# 或使用技能目录中的二进制文件
+.trae/skills/bin/aidis --config service_config.json
 ```
 
 ### 示例3：实时监控
