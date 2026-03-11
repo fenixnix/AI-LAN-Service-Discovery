@@ -59,7 +59,7 @@ for service in services:
 ai-discover-agent --config service_config.json
 
 # 或使用技能目录中的二进制文件
-.trae/skills/bin/aidis --config service_config.json
+.trae/skills/aidis-service-discovery/bin/aidis --config service_config.json
 ```
 
 ### 示例3：实时监控

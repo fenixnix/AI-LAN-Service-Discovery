@@ -37,15 +37,15 @@ jobs:
       - name: Copy skills directory
         run: cp -r .trae/skills release/${{ matrix.target }}/
 
-      - name: Create bin directory in skills
-        run: mkdir -p release/${{ matrix.target }}/.trae/skills/bin
+      - name: Create bin directory in aidis-service-discovery
+        run: mkdir -p release/${{ matrix.target }}/.trae/skills/aidis-service-discovery/bin
 
-      - name: Copy binary to skills bin directory
+      - name: Copy binary to aidis-service-discovery bin directory
         run: |
           if [ "${{ matrix.target }}" = "x86_64-pc-windows-msvc" ]; then
-            cp target/${{ matrix.target }}/release/aidis.exe release/${{ matrix.target }}/.trae/skills/bin/
+            cp target/${{ matrix.target }}/release/aidis.exe release/${{ matrix.target }}/.trae/skills/aidis-service-discovery/bin/
           else
-            cp target/${{ matrix.target }}/release/aidis release/${{ matrix.target }}/.trae/skills/bin/
+            cp target/${{ matrix.target }}/release/aidis release/${{ matrix.target }}/.trae/skills/aidis-service-discovery/bin/
           fi
 
       - name: Create archive
