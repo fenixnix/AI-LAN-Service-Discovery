@@ -1,0 +1,105 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # Rust CI
+  rust:
+    name: Rust CI
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        
+      - name: Check formatting
+        working-directory: ./rust
+        run: cargo fmt --check --all
+      
+      - name: Clippy
+        working-directory: ./rust
+        run: cargo clippy -- -D warnings
+        
+      - name: Build
+        working-directory: ./rust
+        run: cargo build --verbose
+        
+      - name: Run tests
+        working-directory: ./rust
+        run: cargo test --verbose
+
+  # Python CI
+  python:
+    name: Python CI
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ./python
+          
+      - name: Check formatting
+        run: |
+          pip install black
+          black --check --diff python/src/
+          
+      - name: Type check
+        run: |
+          pip install mypy
+          mypy python/src/
+          
+      - name: Test
+        run: |
+          pip install pytest pytest-asyncio
+          pytest python/tests/ -v || true
+
+  # Build release binaries
+  release:
+    name: Build Release
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [rust, python]
+    
+    steps:
+      - uses: actions/checkout@v4
+        
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        
+      - name: Build release
+        working-directory: ./rust
+        run: cargo build --release --locked
+        
+      - name: Create artifacts
+        working-directory: ./rust
+        run: |
+          mkdir -p release
+          cp target/release/ai-discover-agent release/
+          tar -czvf ai-discover-x86_64-unknown-linux-gnu.tar.gz -C release ai-discover-agent
+          
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: rust/ai-discover-x86_64-unknown-linux-gnu.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

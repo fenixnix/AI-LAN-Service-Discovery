@@ -1,0 +1,195 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AI-LAN Service Configuration",
+  "description": "Configuration schema for AI-LAN service discovery agent (supports single or multiple services)",
+  "oneOf": [
+    {
+      "title": "Single Service Configuration",
+      "type": "object",
+      "required": [
+        "service_name",
+        "service_id",
+        "http_port"
+      ],
+      "properties": {
+        "service_name": {
+          "type": "string",
+          "description": "Service display name",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "service_id": {
+          "type": "string",
+          "description": "Unique service identifier",
+          "pattern": "^[a-z0-9-]+$",
+          "minLength": 3,
+          "maxLength": 50
+        },
+        "http_port": {
+          "type": "integer",
+          "description": "HTTP service port",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "manifest_path": {
+          "type": "string",
+          "description": "Manifest path (default: /ai_manifest)",
+          "default": "/ai_manifest",
+          "pattern": "^/[a-zA-Z0-9_/-]+$"
+        },
+        "tags": {
+          "type": "array",
+          "description": "Service tags",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "uniqueItems": true,
+          "maxItems": 20
+        },
+        "priority": {
+          "type": "integer",
+          "description": "Priority (default: 1)",
+          "default": 1,
+          "minimum": 1,
+          "maximum": 100
+        },
+        "udp_port": {
+          "type": "integer",
+          "description": "UDP discovery port (default: 53535)",
+          "default": 53535,
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "announce_on_startup": {
+          "type": "boolean",
+          "description": "Announce on startup (default: true)",
+          "default": true
+        },
+        "announce_interval": {
+          "type": "integer",
+          "description": "Announcement interval in seconds (default: 30)",
+          "default": 30,
+          "minimum": 0
+        },
+        "health_check_url": {
+          "type": "string",
+          "description": "Health check URL",
+          "format": "uri"
+        },
+        "description": {
+          "type": "string",
+          "description": "Service description",
+          "maxLength": 500
+        },
+        "version": {
+          "type": "string",
+          "description": "Service version",
+          "pattern": "^\d+\.\d+\.\d+$",
+          "maxLength": 20
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "title": "Multiple Services Configuration",
+      "type": "object",
+      "required": ["services"],
+      "properties": {
+        "services": {
+          "type": "array",
+          "description": "List of services",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "service_name",
+              "service_id",
+              "http_port"
+            ],
+            "properties": {
+              "service_name": {
+                "type": "string",
+                "description": "Service display name",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              "service_id": {
+                "type": "string",
+                "description": "Unique service identifier",
+                "pattern": "^[a-z0-9-]+$",
+                "minLength": 3,
+                "maxLength": 50
+              },
+              "http_port": {
+                "type": "integer",
+                "description": "HTTP service port",
+                "minimum": 1,
+                "maximum": 65535
+              },
+              "manifest_path": {
+                "type": "string",
+                "description": "Manifest path (default: /ai_manifest)",
+                "default": "/ai_manifest",
+                "pattern": "^/[a-zA-Z0-9_/-]+$"
+              },
+              "tags": {
+                "type": "array",
+                "description": "Service tags",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9-]+$"
+                },
+                "uniqueItems": true,
+                "maxItems": 20
+              },
+              "priority": {
+                "type": "integer",
+                "description": "Priority (default: 1)",
+                "default": 1,
+                "minimum": 1,
+                "maximum": 100
+              },
+              "udp_port": {
+                "type": "integer",
+                "description": "UDP discovery port (default: 53535)",
+                "default": 53535,
+                "minimum": 1,
+                "maximum": 65535
+              },
+              "announce_on_startup": {
+                "type": "boolean",
+                "description": "Announce on startup (default: true)",
+                "default": true
+              },
+              "announce_interval": {
+                "type": "integer",
+                "description": "Announcement interval in seconds (default: 30)",
+                "default": 30,
+                "minimum": 0
+              },
+              "health_check_url": {
+                "type": "string",
+                "description": "Health check URL",
+                "format": "uri"
+              },
+              "description": {
+                "type": "string",
+                "description": "Service description",
+                "maxLength": 500
+              },
+              "version": {
+                "type": "string",
+                "description": "Service version",
+                "pattern": "^\d+\.\d+\.\d+$",
+                "maxLength": 20
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  ]
+}

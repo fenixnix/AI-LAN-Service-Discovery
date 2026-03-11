@@ -1,0 +1,12 @@
+{
+  "service_name": "Speech to Text AI",
+  "service_id": "speech-to-text-001",
+  "http_port": 8083,
+  "manifest_path": "/ai_manifest",
+  "tags": ["speech", "audio", "transcription", "ai"],
+  "priority": 7,
+  "announce_on_startup": true,
+  "health_check_url": "http://localhost:8083/health",
+  "description": "AI 语音转文本服务，支持多种语言识别",
+  "version": "1.0.5"
+}

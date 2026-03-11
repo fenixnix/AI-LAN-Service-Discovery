@@ -1,0 +1,10 @@
+{
+  "service_name": "PDF Converter Pro",
+  "service_id": "pdf-converter-001",
+  "http_port": 8080,
+  "manifest_path": "/ai_manifest",
+  "tags": ["pdf", "convert", "tool", "ai"],
+  "priority": 10,
+  "announce_on_startup": true,
+  "announce_interval": 30
+}

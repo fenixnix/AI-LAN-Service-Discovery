@@ -1,0 +1,12 @@
+{
+  "service_name": "Translation AI",
+  "service_id": "translation-001",
+  "http_port": 8084,
+  "manifest_path": "/ai_manifest",
+  "tags": ["translation", "language", "ai", "nlp"],
+  "priority": 8,
+  "announce_on_startup": true,
+  "health_check_url": "http://localhost:8084/health",
+  "description": "AI 翻译服务，支持多种语言互译",
+  "version": "1.2.0"
+}

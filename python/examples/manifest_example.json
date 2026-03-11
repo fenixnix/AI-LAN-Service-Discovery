@@ -1,0 +1,125 @@
+{
+  "meta": {
+    "service_id": "pdf-converter-001",
+    "name": "PDF Converter Pro",
+    "version": "1.2.0",
+    "description": "A powerful PDF to Markdown converter with OCR support",
+    "author": "AI Tools Team"
+  },
+  "capabilities": [
+    {
+      "id": "convert_pdf_to_md",
+      "name": "Convert PDF to Markdown",
+      "description": "Convert PDF files to well-formatted Markdown text",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "file_path": {
+            "type": "string",
+            "description": "Path to the PDF file on the server"
+          },
+          "pages": {
+            "type": "string",
+            "description": "Page range to convert (e.g., '1-10' or 'all')"
+          },
+          "extract_images": {
+            "type": "boolean",
+            "description": "Whether to extract images as base64",
+            "default": false
+          }
+        },
+        "required": ["file_path"]
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "Converted Markdown content"
+          },
+          "images": {
+            "type": "array",
+            "description": "Extracted images (if enabled)",
+            "items": {
+              "type": "string",
+              "description": "Base64 encoded image"
+            }
+          },
+          "page_count": {
+            "type": "integer",
+            "description": "Total pages processed"
+          }
+        }
+      }
+    },
+    {
+      "id": "summarize_pdf",
+      "name": "Summarize PDF Content",
+      "description": "Generate a summary of PDF content using AI",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "file_path": {
+            "type": "string",
+            "description": "Path to the PDF file"
+          },
+          "max_length": {
+            "type": "integer",
+            "description": "Maximum summary length in words",
+            "default": 500
+          }
+        },
+        "required": ["file_path"]
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "summary": {
+            "type": "string",
+            "description": "Generated summary"
+          },
+          "key_points": {
+            "type": "array",
+            "description": "Key points extracted",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "extract_text",
+      "name": "Extract Plain Text",
+      "description": "Extract plain text from PDF without formatting",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "file_path": {
+            "type": "string",
+            "description": "Path to the PDF file"
+          }
+        },
+        "required": ["file_path"]
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Extracted plain text"
+          }
+        }
+      }
+    }
+  ],
+  "endpoints": {
+    "base_url": "http://192.168.1.50:8080",
+    "health_check": "/health",
+    "invoke": "/api/v1/invoke"
+  },
+  "auth": {
+    "type": "bearer_token",
+    "token_location": "header"
+  }
+}

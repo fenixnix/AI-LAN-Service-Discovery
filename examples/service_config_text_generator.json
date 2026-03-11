@@ -1,0 +1,12 @@
+{
+  "service_name": "Text Generator AI",
+  "service_id": "text-generator-001",
+  "http_port": 8081,
+  "manifest_path": "/ai_manifest",
+  "tags": ["text", "generation", "ai", "nlp"],
+  "priority": 8,
+  "announce_on_startup": true,
+  "health_check_url": "http://localhost:8081/health",
+  "description": "AI 文本生成服务，支持文章、故事、诗歌创作",
+  "version": "1.0.0"
+}

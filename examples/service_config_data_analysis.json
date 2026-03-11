@@ -1,0 +1,12 @@
+{
+  "service_name": "Data Analysis AI",
+  "service_id": "data-analysis-001",
+  "http_port": 8085,
+  "manifest_path": "/ai_manifest",
+  "tags": ["data", "analysis", "ai", "statistics"],
+  "priority": 9,
+  "announce_on_startup": true,
+  "health_check_url": "http://localhost:8085/health",
+  "description": "AI 数据分析服务，支持数据挖掘、预测分析",
+  "version": "1.1.5"
+}

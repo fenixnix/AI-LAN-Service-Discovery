@@ -1,0 +1,41 @@
+[package]
+name = "aidis"
+version = "0.1.0"
+edition = "2021"
+description = "AI-LAN Service Discovery System"
+readme = "README.md"
+license = "MIT"
+authors = ["AI Server Discover Team <team@ai-server-discover.dev>"]
+keywords = ["ai", "service-discovery", "lan", "zeroconf", "agent", "scanner"]
+categories = ["network-programming", "development-tools"]
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+clap = { version = "4.0", features = ["derive"] }
+anyhow = "1.0"
+thiserror = "1.0"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+uuid = { version = "1.0", features = ["v4"] }
+reqwest = { version = "0.11", features = ["json"] }
+async-trait = "0.1"
+futures = "0.3"
+socket2 = "0.5"
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[[bin]]
+name = "aidis"
+path = "src/main.rs"
+
+[lib]
+name = "aidis"
+path = "src/lib.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
