@@ -6,6 +6,7 @@
 
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
+use std::time::Duration;
 use tokio;
 use tracing::{debug, info, error};
 
@@ -295,5 +296,3 @@ async fn run_listen(output_file: PathBuf, interval: u32, no_manifest: bool) {
         }
     }
 }
-
-use std::time::Duration;
