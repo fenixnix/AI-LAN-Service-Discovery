@@ -6,7 +6,26 @@ on:
       - v*.*.*
 
 jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
   release:
+    needs: create-release
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -62,24 +81,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: release/aidis-${{ matrix.target }}.${{ matrix.target == 'x86_64-pc-windows-msvc' ? 'zip' : 'tar.gz' }}
-          asset_name: aidis-${{ matrix.target }}.${{ matrix.target == 'x86_64-pc-windows-msvc' ? 'zip' : 'tar.gz' }}
-          asset_content_type: ${{ matrix.target == 'x86_64-pc-windows-msvc' ? 'application/zip' : 'application/gzip' }}
-
-  create-release:
-    needs: release
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: release/aidis-${{ matrix.target }}.${{ contains(matrix.target, 'windows') && 'zip' || 'tar.gz' }}
+          asset_name: aidis-${{ matrix.target }}.${{ contains(matrix.target, 'windows') && 'zip' || 'tar.gz' }}
+          asset_content_type: ${{ contains(matrix.target, 'windows') && 'application/zip' || 'application/gzip' }}
