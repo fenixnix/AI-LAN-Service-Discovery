@@ -86,10 +86,10 @@ aiecho scan --output table
 
 ## Documentation
 
-For more detailed documentation, please refer to the language-specific AIEcho files:
+For more detailed documentation, please refer to the language-specific README files:
 
-- [English Documentation](AIEcho.en.md)
-- [中文文档](AIEcho.zh-CN.md)
+- [English Documentation](README.en.md)
+- [中文文档](README.zh-CN.md)
 
 ---
 
