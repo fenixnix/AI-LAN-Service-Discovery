@@ -26,35 +26,43 @@ pub const PROTOCOL_VERSION: &str = "1.0";
 pub const BROADCAST_ADDR: &str = "255.255.255.255";
 
 /// Parse UDP message into command and payload
-pub fn parse_message(data: &[u8]) -> std::result::Result<(String, serde_json::Value), ProtocolError> {
+pub fn parse_message(
+    data: &[u8],
+) -> std::result::Result<(String, serde_json::Value), ProtocolError> {
     let text = String::from_utf8(data.to_vec())
         .map_err(|e| ProtocolError::InvalidEncoding(e.to_string()))?;
-    
+
     let text = text.trim();
     let lines: Vec<&str> = text.splitn(2, '\n').collect();
-    
+
     if lines.len() != 2 {
         return Err(ProtocolError::InvalidFormat(format!(
             "Expected COMMAND\\nJSON, got: {}",
             &text[..text.len().min(100)]
         )));
     }
-    
+
     let cmd = lines[0].trim().to_string();
-    let payload: serde_json::Value = serde_json::from_str(lines[1])
-        .map_err(|e| ProtocolError::InvalidJson(e.to_string()))?;
-    
+    let payload: serde_json::Value =
+        serde_json::from_str(lines[1]).map_err(|e| ProtocolError::InvalidJson(e.to_string()))?;
+
     Ok((cmd, payload))
 }
 
 pub fn build_discover_req(query_id: Option<&str>) -> Vec<u8> {
-    let query_id = query_id.map(String::from).unwrap_or_else(|| uuid::Uuid::new_v4().to_string());
+    let query_id = query_id
+        .map(String::from)
+        .unwrap_or_else(|| uuid::Uuid::new_v4().to_string());
     let payload = serde_json::json!({
         "query_id": query_id,
         "version": PROTOCOL_VERSION,
     });
-    format!("{}\n{}", DISCOVER_REQ, serde_json::to_string(&payload).unwrap())
-        .into_bytes()
+    format!(
+        "{}\n{}",
+        DISCOVER_REQ,
+        serde_json::to_string(&payload).unwrap()
+    )
+    .into_bytes()
 }
 
 /// Build discovery response message
@@ -79,8 +87,12 @@ pub fn build_discover_res(
         "priority": priority,
         "version": PROTOCOL_VERSION,
     });
-    format!("{}\n{}", DISCOVER_RES, serde_json::to_string(&payload).unwrap())
-        .into_bytes()
+    format!(
+        "{}\n{}",
+        DISCOVER_RES,
+        serde_json::to_string(&payload).unwrap()
+    )
+    .into_bytes()
 }
 
 /// Build service announcement message (online)
@@ -106,8 +118,12 @@ pub fn build_announce(
             .as_secs(),
         "version": PROTOCOL_VERSION,
     });
-    format!("{}\n{}", SERVICE_ANNOUNCE, serde_json::to_string(&payload).unwrap())
-        .into_bytes()
+    format!(
+        "{}\n{}",
+        SERVICE_ANNOUNCE,
+        serde_json::to_string(&payload).unwrap()
+    )
+    .into_bytes()
 }
 
 /// Build service goodbye message (offline)
@@ -122,8 +138,12 @@ pub fn build_goodbye(service_id: &str, service_name: &str) -> Vec<u8> {
             .as_secs(),
         "version": PROTOCOL_VERSION,
     });
-    format!("{}\n{}", SERVICE_GOODBYE, serde_json::to_string(&payload).unwrap())
-        .into_bytes()
+    format!(
+        "{}\n{}",
+        SERVICE_GOODBYE,
+        serde_json::to_string(&payload).unwrap()
+    )
+    .into_bytes()
 }
 
 /// Discovered service basic information from UDP response
@@ -147,27 +167,63 @@ impl ServiceInfo {
     pub fn base_url(&self) -> String {
         format!("http://{}:{}", self.ip, self.http_port)
     }
-    
+
     /// Get full manifest URL
     pub fn manifest_url(&self) -> String {
         format!("{}{}", self.base_url(), self.manifest_path)
     }
-    
+
     /// Create ServiceInfo from parsed payload
     pub fn from_payload(payload: &serde_json::Value, ip: &str) -> Self {
         Self {
-            query_id: payload.get("query_id").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            status: payload.get("status").and_then(|v| v.as_str()).unwrap_or("ok").to_string(),
-            service_name: payload.get("service_name").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            service_id: payload.get("service_id").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            http_port: payload.get("http_port").and_then(|v| v.as_u64()).unwrap_or(80) as u16,
-            manifest_path: payload.get("manifest_path").and_then(|v| v.as_str()).unwrap_or("/ai_manifest").to_string(),
-            tags: payload.get("tags").and_then(|v| v.as_array())
-                .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            query_id: payload
+                .get("query_id")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            status: payload
+                .get("status")
+                .and_then(|v| v.as_str())
+                .unwrap_or("ok")
+                .to_string(),
+            service_name: payload
+                .get("service_name")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            service_id: payload
+                .get("service_id")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            http_port: payload
+                .get("http_port")
+                .and_then(|v| v.as_u64())
+                .unwrap_or(80) as u16,
+            manifest_path: payload
+                .get("manifest_path")
+                .and_then(|v| v.as_str())
+                .unwrap_or("/ai_manifest")
+                .to_string(),
+            tags: payload
+                .get("tags")
+                .and_then(|v| v.as_array())
+                .map(|arr| {
+                    arr.iter()
+                        .filter_map(|v| v.as_str().map(String::from))
+                        .collect()
+                })
                 .unwrap_or_default(),
-            priority: payload.get("priority").and_then(|v| v.as_u64()).unwrap_or(1) as u8,
+            priority: payload
+                .get("priority")
+                .and_then(|v| v.as_u64())
+                .unwrap_or(1) as u8,
             ip: ip.to_string(),
-            version: payload.get("version").and_then(|v| v.as_str()).unwrap_or(PROTOCOL_VERSION).to_string(),
+            version: payload
+                .get("version")
+                .and_then(|v| v.as_str())
+                .unwrap_or(PROTOCOL_VERSION)
+                .to_string(),
         }
     }
 }
@@ -193,27 +249,62 @@ impl ServiceEvent {
     pub fn base_url(&self) -> String {
         format!("http://{}:{}", self.ip, self.http_port)
     }
-    
+
     /// Get full manifest URL
     pub fn manifest_url(&self) -> String {
         format!("{}{}", self.base_url(), self.manifest_path)
     }
-    
+
     /// Create ServiceEvent from parsed payload
     pub fn from_payload(payload: &serde_json::Value, ip: &str) -> Self {
         Self {
-            event: payload.get("event").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            service_id: payload.get("service_id").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            service_name: payload.get("service_name").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            http_port: payload.get("http_port").and_then(|v| v.as_u64()).unwrap_or(80) as u16,
-            manifest_path: payload.get("manifest_path").and_then(|v| v.as_str()).unwrap_or("/ai_manifest").to_string(),
-            tags: payload.get("tags").and_then(|v| v.as_array())
-                .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            event: payload
+                .get("event")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            service_id: payload
+                .get("service_id")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            service_name: payload
+                .get("service_name")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            http_port: payload
+                .get("http_port")
+                .and_then(|v| v.as_u64())
+                .unwrap_or(80) as u16,
+            manifest_path: payload
+                .get("manifest_path")
+                .and_then(|v| v.as_str())
+                .unwrap_or("/ai_manifest")
+                .to_string(),
+            tags: payload
+                .get("tags")
+                .and_then(|v| v.as_array())
+                .map(|arr| {
+                    arr.iter()
+                        .filter_map(|v| v.as_str().map(String::from))
+                        .collect()
+                })
                 .unwrap_or_default(),
-            priority: payload.get("priority").and_then(|v| v.as_u64()).unwrap_or(1) as u8,
+            priority: payload
+                .get("priority")
+                .and_then(|v| v.as_u64())
+                .unwrap_or(1) as u8,
             ip: ip.to_string(),
-            timestamp: payload.get("timestamp").and_then(|v| v.as_u64()).unwrap_or(0),
-            version: payload.get("version").and_then(|v| v.as_str()).unwrap_or(PROTOCOL_VERSION).to_string(),
+            timestamp: payload
+                .get("timestamp")
+                .and_then(|v| v.as_u64())
+                .unwrap_or(0),
+            version: payload
+                .get("version")
+                .and_then(|v| v.as_str())
+                .unwrap_or(PROTOCOL_VERSION)
+                .to_string(),
         }
     }
 }
@@ -223,10 +314,10 @@ impl ServiceEvent {
 pub enum ProtocolError {
     #[error("Invalid encoding: {0}")]
     InvalidEncoding(String),
-    
+
     #[error("Invalid format: {0}")]
     InvalidFormat(String),
-    
+
     #[error("Invalid JSON: {0}")]
     InvalidJson(String),
 }

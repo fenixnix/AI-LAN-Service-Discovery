@@ -56,28 +56,28 @@ use thiserror::Error;
 pub struct ServiceConfig {
     /// Human-readable service name
     pub service_name: String,
-    
+
     /// Unique service identifier
     pub service_id: String,
-    
+
     /// HTTP service port
     pub http_port: u16,
-    
+
     /// Manifest endpoint path
     pub manifest_path: String,
-    
+
     /// Service tags for categorization
     pub tags: Vec<String>,
-    
+
     /// Service priority (higher = preferred)
     pub priority: u8,
-    
+
     /// UDP discovery port
     pub udp_port: u16,
-    
+
     /// Announce service on startup
     pub announce_on_startup: bool,
-    
+
     /// Announcement broadcast interval in seconds (0 to disable)
     pub announce_interval: u32,
 }
@@ -93,7 +93,7 @@ pub struct ServicesConfig {
 
 impl ServiceConfig {
     /// Load configuration from JSON file
-    /// 
+    ///
     /// This method supports both single service configuration and multiple services configuration.
     /// - For single service: returns a vector with one element
     /// - For multiple services: returns a vector with all services
@@ -102,10 +102,10 @@ impl ServiceConfig {
         if !path.exists() {
             return Err(ConfigError::FileNotFound(path.display().to_string()));
         }
-        
-        let content = std::fs::read_to_string(path)
-            .map_err(|e| ConfigError::IoError(e.to_string()))?;
-        
+
+        let content =
+            std::fs::read_to_string(path).map_err(|e| ConfigError::IoError(e.to_string()))?;
+
         // Try to parse as multiple services first
         if let Ok(services_config) = serde_json::from_str::<ServicesConfig>(&content) {
             Ok(services_config.services)
@@ -117,19 +117,23 @@ impl ServiceConfig {
             }
         }
     }
-    
+
     /// Get base URL for the service
     pub fn base_url(&self) -> String {
         format!("http://localhost:{}", self.http_port)
     }
-    
+
     /// Get full manifest URL
     pub fn manifest_url(&self) -> String {
         format!("{}{}", self.base_url(), self.manifest_path)
     }
-    
+
     /// Create a new ServiceConfig with required fields
-    pub fn new(service_name: impl Into<String>, service_id: impl Into<String>, http_port: u16) -> Self {
+    pub fn new(
+        service_name: impl Into<String>,
+        service_id: impl Into<String>,
+        http_port: u16,
+    ) -> Self {
         Self {
             service_name: service_name.into(),
             service_id: service_id.into(),
@@ -157,30 +161,30 @@ pub struct ClientConfig {
     /// UDP discovery port
     #[serde(rename = "udpPort")]
     pub udp_port: u16,
-    
+
     /// Scan timeout in seconds
     pub timeout: f64,
-    
+
     /// Output format: json, yaml, table
     #[serde(rename = "outputFormat")]
     pub output_format: String,
-    
+
     /// Output file path
     #[serde(rename = "outputFile")]
     pub output_file: Option<String>,
-    
+
     /// Enable real-time listening mode
     #[serde(rename = "watchMode")]
     pub watch_mode: bool,
-    
+
     /// Auto-scan interval in seconds
     #[serde(rename = "scanInterval")]
     pub scan_interval: u32,
-    
+
     /// Automatically fetch service manifests
     #[serde(rename = "fetchManifest")]
     pub fetch_manifest: bool,
-    
+
     /// Maximum concurrent manifest fetches
     #[serde(rename = "maxConcurrent")]
     pub max_concurrent: usize,
@@ -281,7 +285,7 @@ impl Manifest {
     pub fn from_json(data: serde_json::Value) -> std::result::Result<Self, serde_json::Error> {
         serde_json::from_value(data)
     }
-    
+
     /// Convert to JSON value
     pub fn to_json(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap()
@@ -293,10 +297,10 @@ impl Manifest {
 pub enum ConfigError {
     #[error("File not found: {0}")]
     FileNotFound(String),
-    
+
     #[error("IO error: {0}")]
     IoError(String),
-    
+
     #[error("Parse error: {0}")]
     ParseError(String),
 }

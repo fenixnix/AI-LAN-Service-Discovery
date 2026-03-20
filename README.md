@@ -59,7 +59,8 @@ AIEcho is a lightweight, zero-configuration, high-performance LAN AI microservic
 # Python
 pip install ai-discover
 ai-discover-agent --config service_config.json
-```bash
+
+```bash
 # or Rust (cargo)
 cargo install aiecho
 aiecho --config service_config.json

@@ -18,7 +18,7 @@
 //! ```bash
 //! aiecho --config service_config.json
 //! ```
-//! 
+//!
 //! ### As client (AI scanner)
 //! ```bash
 //! aiecho scan --output json
@@ -31,11 +31,11 @@ pub mod server;
 
 pub use config::{ClientConfig, ServiceConfig};
 pub use protocol::{
-    parse_message, build_discover_req, build_discover_res, build_announce, build_goodbye,
-    ServiceInfo, ServiceEvent, DISCOVERY_PORT, DISCOVER_REQ, DISCOVER_RES,
-    SERVICE_ANNOUNCE, SERVICE_GOODBYE, PROTOCOL_VERSION,
+    build_announce, build_discover_req, build_discover_res, build_goodbye, parse_message,
+    ServiceEvent, ServiceInfo, DISCOVERY_PORT, DISCOVER_REQ, DISCOVER_RES, PROTOCOL_VERSION,
+    SERVICE_ANNOUNCE, SERVICE_GOODBYE,
 };
-pub use scanner::{DiscoveryScanner, DiscoveredService};
+pub use scanner::{DiscoveredService, DiscoveryScanner};
 pub use server::DiscoveryServer;
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

@@ -1,11 +1,11 @@
 [package]
 name = "aiecho"
-version = "0.1.2"
+version = "0.1.4"
 edition = "2021"
-description = "AI-LAN Service Discovery System"
+description = "AIEcho System"
 readme = "README.md"
 license = "MIT"
-authors = ["AI Server Discover Team <team@ai-server-discover.dev>"]
+authors = ["AIEcho Team <team@aiecho.dev>"]
 keywords = ["ai", "service-discovery", "lan", "zeroconf", "agent", "scanner"]
 categories = ["network-programming", "development-tools"]
 

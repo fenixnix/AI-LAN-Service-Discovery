@@ -1,12 +1,12 @@
 [project]
-name = "ai-discover"
-version = "0.1.0"
-description = "AI-LAN Service Discovery System"
+name = "aiecho"
+version = "0.1.4"
+description = "AIEcho System"
 readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
 authors = [
-    {name = "AI Server Discover Team", email = "team@ai-server-discover.dev"}
+    {name = "AIEcho Team", email = "team@aiecho.dev"}
 ]
 keywords = ["ai", "service-discovery", "lan", "mdns", "zeroconf", "agent", "scanner"]
 classifiers = [
@@ -39,9 +39,9 @@ dev = [
 ]
 
 [project.scripts]
-ai-discover-agent = "ai_discover.cli:agent"
-ai-scan = "ai_discover.cli:scan"
-ai-listen = "ai_discover.cli:listen"
+aiecho-agent = "aiecho.cli:agent"
+aiecho-scan = "aiecho.cli:scan"
+aiecho-listen = "aiecho.cli:listen"
 
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
