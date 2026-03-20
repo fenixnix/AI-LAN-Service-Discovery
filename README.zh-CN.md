@@ -6,8 +6,8 @@
 - [中文](README.zh-CN.md)
 
 <p align="center">
-  <a href="https://github.com/fenixnix/AI-LAN-Service-Discovery/releases">
-    <img src="https://img.shields.io/github/v/release/fenixnix/AI-LAN-Service-Discovery?include_prereleases&label=release" alt="Release"/>
+  <a href="https://github.com/fenixnix/AIEcho/releases">
+    <img src="https://img.shields.io/github/v/release/fenixnix/AIEcho?include_prereleases&label=release" alt="Release"/>
   </a>
   <a href="https://www.python.org/">
     <img src="https://img.shields.io/badge/Python-3.8+-blue.svg" alt="Python"/>
