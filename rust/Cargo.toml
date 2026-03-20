@@ -1,5 +1,5 @@
 [package]
-name = "aidis"
+name = "aiecho"
 version = "0.1.2"
 edition = "2021"
 description = "AI-LAN Service Discovery System"
@@ -28,11 +28,11 @@ socket2 = "0.5"
 tokio-test = "0.4"
 
 [[bin]]
-name = "aidis"
+name = "aiecho"
 path = "src/main.rs"
 
 [lib]
-name = "aidis"
+name = "aiecho"
 path = "src/lib.rs"
 
 [profile.release]

@@ -1,0 +1,47 @@
+{
+  "$schema": "service_config.schema.json",
+  "examples": {
+    "single_service": {
+      "service_name": "AI Assistant API",
+      "service_id": "ai-assistant-api",
+      "http_port": 8080,
+      "manifest_path": "/ai_manifest",
+      "tags": ["ai", "assistant", "api"],
+      "priority": 10,
+      "udp_port": 53535,
+      "announce_on_startup": true,
+      "announce_interval": 30,
+      "health_check_url": "http://localhost:8080/health",
+      "description": "AI assistant service with natural language processing capabilities",
+      "version": "1.0.0"
+    },
+    "multiple_services": {
+      "services": [
+        {
+          "service_name": "Text Generation API",
+          "service_id": "text-gen-api",
+          "http_port": 8081,
+          "tags": ["text", "generation", "api"],
+          "priority": 5,
+          "version": "1.2.0"
+        },
+        {
+          "service_name": "Image Generation API",
+          "service_id": "image-gen-api",
+          "http_port": 8082,
+          "tags": ["image", "generation", "api"],
+          "priority": 8,
+          "version": "1.1.0"
+        },
+        {
+          "service_name": "Speech Recognition API",
+          "service_id": "speech-recog-api",
+          "http_port": 8083,
+          "tags": ["speech", "recognition", "api"],
+          "priority": 15,
+          "version": "1.0.0"
+        }
+      ]
+    }
+  }
+}

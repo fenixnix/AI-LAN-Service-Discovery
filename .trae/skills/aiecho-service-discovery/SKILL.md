@@ -1,9 +1,9 @@
 ---
-name: "aidis-service-discovery"
-description: "Integrates with AI-LAN Service Discovery (aidis) protocol for service discovery and capability management. Invoke when Agent needs to discover local AI services or when implementing service registration for AI capabilities."
+name: "aiecho-service-discovery"
+description: "Integrates with AIEcho Service Discovery protocol for service discovery and capability management. Invoke when Agent needs to discover local AI services or when implementing service registration for AI capabilities."
 ---
 
-# aidis-service-discovery
+# aiecho-service-discovery
 
 ## 何时使用
 当Agent需要发现局域网内的AI服务，或需要注册新的AI能力作为可发现服务时使用此技能。
@@ -29,7 +29,7 @@ description: "Integrates with AI-LAN Service Discovery (aidis) protocol for serv
 
 ### 示例1：发现服务
 ```python
-from ai_discover import Scanner
+from aiecho import Scanner
 
 scanner = Scanner()
 services = scanner.scan(timeout=2.0)
@@ -56,15 +56,15 @@ for service in services:
 启动服务：
 ```bash
 # 使用系统安装的命令
-ai-discover-agent --config service_config.json
+aiecho-agent --config service_config.json
 
 # 或使用技能目录中的二进制文件
-.trae/skills/aidis-service-discovery/bin/aidis --config service_config.json
+.trae/skills/aiecho-service-discovery/bin/aiecho --config service_config.json
 ```
 
 ### 示例3：实时监控
 ```python
-from ai_discover import Listener
+from aiecho import Listener
 
 def on_service_online(service):
     print(f"Service online: {service.service_name}")

@@ -1,8 +1,8 @@
-# AI-Server-Discover Implementation Plan
+# AIEcho Python Implementation Plan
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Create a complete Python implementation of the AI-LAN Service Discovery system with server agent, client scanner, and real-time listener.
+**Goal:** Create a complete Python implementation of the AIEcho system with server agent, client scanner, and real-time listener.
 
 **Architecture:** Two-stage discovery protocol - UDP broadcast (53535) for service location + HTTP GET for manifest introspection. Services announce themselves on startup.
 
@@ -16,7 +16,7 @@
 python/
 ├── pyproject.toml
 ├── src/
-│   └── ai_discover/
+│   └── aiecho/
 │       ├── __init__.py
 │       ├── protocol.py      # UDP protocol constants and message parsing
 │       ├── config.py        # Configuration models
@@ -45,9 +45,9 @@ python/
 
 ```toml
 [project]
-name = "ai-discover"
+name = "aiecho"
 version = "0.1.0"
-description = "AI-LAN Service Discovery System"
+description = "AIEcho System"
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
@@ -58,8 +58,8 @@ dependencies = [
 ]
 
 [project.scripts]
-ai-discover-agent = "ai_discover.cli:agent"
-ai-scan = "ai_discover.cli:scan"
+aiecho-agent = "aiecho.cli:agent"
+aiecho-scan = "aiecho.cli:scan"
 
 [build-system]
 requires = ["setuptools>=61.0"]
@@ -73,15 +73,15 @@ python_files = ["test_*.py"]
 **Step 2: Create __init__.py**
 
 ```python
-"""AI-LAN Service Discovery System"""
+"""AIEcho System"""
 
 __version__ = "0.1.0"
 
-from ai_discover.protocol import DISCOVERY_PORT, DISCOVER_REQ, DISCOVER_RES, SERVICE_ANNOUNCE, SERVICE_GOODBYE
-from ai_discover.config import ServiceConfig, ClientConfig
-from ai_discover.server import DiscoveryServer
-from ai_discover.scanner import DiscoveryScanner
-from ai_discover.listener import DiscoveryListener
+from aiecho.protocol import DISCOVERY_PORT, DISCOVER_REQ, DISCOVER_RES, SERVICE_ANNOUNCE, SERVICE_GOODBYE
+from aiecho.config import ServiceConfig, ClientConfig
+from aiecho.server import DiscoveryServer
+from aiecho.scanner import DiscoveryScanner
+from aiecho.listener import DiscoveryListener
 
 __all__ = [
     "DISCOVERY_PORT",
@@ -122,7 +122,7 @@ git commit -m "feat(python): initial project setup"
 ```python
 # tests/test_protocol.py
 import pytest
-from ai_discover.protocol import (
+from aiecho.protocol import (
     parse_message,
     build_discover_req,
     build_discover_res,
@@ -130,7 +130,7 @@ from ai_discover.protocol import (
     build_goodbye,
     DISCOVERY_PORT,
 )
-
+```
 def test_parse_discover_req():
     raw = "AI_DISCOVER_REQ\n{\"query_id\": \"test-123\", \"version\": \"1.0\"}"
     cmd, payload = parse_message(raw.encode())
@@ -324,8 +324,8 @@ git commit -m "feat(python): implement UDP discovery protocol"
 # tests/test_config.py
 import pytest
 from pydantic import ValidationError
-from ai_discover.config import ServiceConfig, ClientConfig
-
+from aiecho.config import ServiceConfig, ClientConfig
+```
 def test_service_config_valid():
     config = ServiceConfig(
         service_name="Test Service",
@@ -451,9 +451,9 @@ git commit -m "feat(python): add configuration models"
 # tests/test_server.py
 import pytest
 import asyncio
-from ai_discover.server import DiscoveryServer
-from ai_discover.config import ServiceConfig
-
+from aiecho.server import DiscoveryServer
+from aiecho.config import ServiceConfig
+```
 @pytest.mark.asyncio
 async def test_server_start_stop():
     config = ServiceConfig(
@@ -487,7 +487,7 @@ import threading
 from typing import Optional
 import zeroconf
 
-from ai_discover.protocol import (
+from aiecho.protocol import (
     DISCOVERY_PORT,
     DISCOVER_REQ,
     DISCOVER_RES,
@@ -498,7 +498,7 @@ from ai_discover.protocol import (
     build_announce,
     build_goodbye,
 )
-from ai_discover.config import ServiceConfig
+from aiecho.config import ServiceConfig
 
 logger = logging.getLogger(__name__)
 
@@ -681,8 +681,8 @@ git commit -m "feat(python): implement discovery server agent"
 # tests/test_scanner.py
 import pytest
 import asyncio
-from ai_discover.scanner import DiscoveryScanner
-
+from aiecho.scanner import DiscoveryScanner
+```
 @pytest.mark.asyncio
 async def test_scanner_scan():
     scanner = DiscoveryScanner(timeout=1.0)
@@ -708,7 +708,7 @@ import logging
 from typing import Optional
 from dataclasses import dataclass, field
 
-from ai_discover.protocol import (
+from aiecho.protocol import (
     DISCOVERY_PORT,
     DISCOVER_REQ,
     DISCOVER_RES,
@@ -719,7 +719,7 @@ from ai_discover.protocol import (
     ServiceInfo,
     ServiceEvent,
 )
-from ai_discover.config import ClientConfig
+from aiecho.config import ClientConfig
 
 logger = logging.getLogger(__name__)
 
@@ -867,8 +867,8 @@ git commit -m "feat(python): implement discovery scanner client"
 # tests/test_listener.py
 import pytest
 import asyncio
-from ai_discover.listener import DiscoveryListener
-
+from aiecho.listener import DiscoveryListener
+```
 @pytest.mark.asyncio
 async def test_listener_start_stop():
     listener = DiscoveryListener()
@@ -897,14 +897,14 @@ import time
 from typing import Callable, Optional
 from dataclasses import dataclass, field
 
-from ai_discover.protocol import (
+from aiecho.protocol import (
     DISCOVERY_PORT,
     SERVICE_ANNOUNCE,
     SERVICE_GOODBYE,
     parse_message,
     ServiceEvent,
 )
-from ai_discover.config import ClientConfig
+from aiecho.config import ClientConfig
 
 logger = logging.getLogger(__name__)
 
@@ -1121,17 +1121,17 @@ import click
 from rich.console import Console
 from rich.table import Table
 
-from ai_discover.config import ServiceConfig, ClientConfig
-from ai_discover.server import DiscoveryServer
-from ai_discover.scanner import DiscoveryScanner
-from ai_discover.listener import DiscoveryListener
+from aiecho.config import ServiceConfig, ClientConfig
+from aiecho.server import DiscoveryServer
+from aiecho.scanner import DiscoveryScanner
+from aiecho.listener import DiscoveryListener
 
 console = Console()
 
 
 @click.group()
 def cli():
-    """AI-LAN Service Discovery System"""
+    """AIEcho System"""
     pass
 
 

@@ -1,10 +1,10 @@
-# AI-LAN 服务发现文档
+# AIEcho 文档
 
 ## 系统 - 需求1. 项目概述
 
 ### 1.1 项目名称
 
-**AI-LAN 服务发现系统** (AI-Server-Discover)
+**AIEcho**
 
 ### 1.2 项目目标
 
@@ -98,7 +98,7 @@
 
 **基本流程**:
 1. 开发者创建服务配置文件 (service_config.json)
-2. 启动 ai-discover-agent 并指定配置文件
+2. 启动 aiecho-agent 并指定配置文件
 3. 服务代理自动在 UDP 53535 端口监听
 4. 服务启动时自动广播公告消息
 5. 客户端扫描时能发现该服务
@@ -116,7 +116,7 @@
 - 局域网内已有注册的服务
 
 **基本流程**:
-1. AI Agent 调用 ai-scan 命令
+1. AI Agent 调用 aiecho-scan 命令
 2. 客户端发送 UDP 广播
 3. 收集所有响应服务的基本信息
 4. 并发请求各服务的 /ai_manifest 获取完整能力描述
@@ -135,7 +135,7 @@
 - 客户端开启监听模式
 
 **基本流程**:
-1. 客户端启动监听模式 (ai-scan --watch)
+1. 客户端启动监听模式 (aiecho-scan --watch)
 2. 监听 UDP 53535 端口的公告消息
 3. 新服务上线时收到 ANNOUNCE 消息
 4. 服务下线时收到 GOODBYE 消息
@@ -189,8 +189,8 @@
 
 | 组件 | 说明 |
 |------|------|
-| ai-discover-agent | 服务端代理，响应发现请求，提供 Manifest |
-| ai-scan | 客户端扫描工具，发现服务并获取 Manifest |
+| aiecho-agent | 服务端代理，响应发现请求，提供 Manifest |
+| aiecho-scan | 客户端扫描工具，发现服务并获取 Manifest |
 | Discovery Protocol | UDP 广播协议 (端口 53535) |
 | Manifest API | HTTP RESTful API (/ai_manifest) |
 

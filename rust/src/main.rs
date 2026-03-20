@@ -10,13 +10,13 @@ use std::time::Duration;
 use tokio;
 use tracing::{debug, info, error};
 
-use aidis::{ServiceConfig, ClientConfig, DiscoveryServer, DiscoveryScanner};
+use aiecho::{ServiceConfig, ClientConfig, DiscoveryServer, DiscoveryScanner};
 
 /// AI-LAN Service Discovery System
 ///
 /// A lightweight, zero-config LAN service discovery mechanism for AI agents.
 #[derive(Parser)]
-#[command(name = "aidis")]
+#[command(name = "aiecho")]
 #[command(version = "0.1.0")]
 #[command(about = "AI-LAN Service Discovery System", long_about = None)]
 struct Cli {

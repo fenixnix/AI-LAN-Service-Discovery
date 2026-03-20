@@ -16,12 +16,12 @@
 //!
 //! ### As server (service provider)
 //! ```bash
-//! aidis --config service_config.json
+//! aiecho --config service_config.json
 //! ```
 //! 
 //! ### As client (AI scanner)
 //! ```bash
-//! aidis scan --output json
+//! aiecho scan --output json
 //! ```
 
 pub mod config;

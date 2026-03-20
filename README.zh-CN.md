@@ -1,4 +1,4 @@
-# AI-LAN Service Discovery (aidis)
+# AIEcho
 
 ## Language / 语言
 
@@ -24,7 +24,7 @@
 
 ## 概述
 
-AI-LAN 服务发现系统是一套轻量级、零配置、高性能的局域网 AI 微服务发现机制。该系统使 AI Agent 能够动态发现并调用局域网内部署的各种 AI 工具服务（如 PDF 处理、图像生成、知识库检索等）。
+AIEcho 是一套轻量级、零配置、高性能的局域网 AI 微服务发现机制。该系统使 AI Agent 能够动态发现并调用局域网内部署的各种 AI 工具服务（如 PDF 处理、图像生成、知识库检索等）。
 
 ### 核心特性
 
@@ -91,10 +91,10 @@ AI-LAN 服务发现系统是一套轻量级、零配置、高性能的局域网 
 # Python
 pip install ai-discover
 ai-discover-agent --config service_config.json
-
+```bash
 # or Rust (cargo)
-cargo install aidis
-aidis --config service_config.json
+cargo install aiecho
+aiecho --config service_config.json
 ```
 
 ### 2. 客户端 (AI Scanner)
@@ -110,8 +110,8 @@ ai-scan --output json
 ai-scan --output table
 
 # Rust 版本
-aidis scan --output json
-aidis scan --output table
+aiecho scan --output json
+aiecho scan --output table
 ```
 
 **输出示例：**
@@ -279,9 +279,9 @@ ai-scan --mode active --interval 30
 # 被动监听模式 (Python)
 ai-scan --mode passive --watch-file services.json
 
-# Rust 版本使用 aidis 命令
-aidis scan --output json
-aidis listen --output-file services.json --interval 30
+# Rust 版本使用 aiecho 命令
+aiecho scan --output json
+aiecho listen --output-file services.json --interval 30
 ```
 
 ---
@@ -303,7 +303,7 @@ pip install -e .
 
 ```bash
 # 从 crates.io 安装
-cargo install aidis
+cargo install aiecho
 
 # 或从源码构建
 cd rust
@@ -352,19 +352,19 @@ for service in services:
 
 ```bash
 # 扫描局域网，输出 JSON 到 stdout
-aidis scan --output json
+aiecho scan --output json
 
 # 扫描并输出表格形式
-aidis scan --output table
+aiecho scan --output table
 
 # 扫描并保存到文件
-aidis scan --output json --output-file services.json
+aiecho scan --output json --output-file services.json
 
 # 扫描不获取 manifest（更快）
-aidis scan --no-manifest
+aiecho scan --no-manifest
 
 # 自定义超时
-aidis scan --timeout 5.0
+aiecho scan --timeout 5.0
 ```
 
 ### 示例 3: 实时监听服务变化

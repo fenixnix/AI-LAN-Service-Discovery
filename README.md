@@ -1,4 +1,4 @@
-# AI-LAN Service Discovery (aidis)
+# AIEcho
 
 ## Language / 语言
 
@@ -24,7 +24,7 @@
 
 ## Overview
 
-AI-LAN Service Discovery is a lightweight, zero-configuration, high-performance LAN AI microservice discovery mechanism. This system enables AI Agents to dynamically discover and call various AI tool services deployed on the local network (such as PDF processing, image generation, knowledge base retrieval, etc.).
+AIEcho is a lightweight, zero-configuration, high-performance LAN AI microservice discovery mechanism. This system enables AI Agents to dynamically discover and call various AI tool services deployed on the local network (such as PDF processing, image generation, knowledge base retrieval, etc.).
 
 ### Core Features
 
@@ -59,10 +59,10 @@ AI-LAN Service Discovery is a lightweight, zero-configuration, high-performance 
 # Python
 pip install ai-discover
 ai-discover-agent --config service_config.json
-
+```bash
 # or Rust (cargo)
-cargo install aidis
-aidis --config service_config.json
+cargo install aiecho
+aiecho --config service_config.json
 ```
 
 ### Client Side (AI Scanner)
@@ -78,18 +78,18 @@ ai-scan --output json
 ai-scan --output table
 
 # Rust version
-aidis scan --output json
-aidis scan --output table
+aiecho scan --output json
+aiecho scan --output table
 ```
 
 ---
 
 ## Documentation
 
-For more detailed documentation, please refer to the language-specific README files:
+For more detailed documentation, please refer to the language-specific AIEcho files:
 
-- [English Documentation](README.en.md)
-- [中文文档](README.zh-CN.md)
+- [English Documentation](AIEcho.en.md)
+- [中文文档](AIEcho.zh-CN.md)
 
 ---
 

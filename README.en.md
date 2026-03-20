@@ -1,4 +1,4 @@
-# AI-LAN Service Discovery (aidis)
+# AIEcho
 
 ## Language / 语言
 
@@ -24,7 +24,7 @@
 
 ## Overview
 
-AI-LAN Service Discovery is a lightweight, zero-configuration, high-performance LAN AI microservice discovery mechanism. This system enables AI Agents to dynamically discover and call various AI tool services deployed on the local network (such as PDF processing, image generation, knowledge base retrieval, etc.).
+AIEcho is a lightweight, zero-configuration, high-performance LAN AI microservice discovery mechanism. This system enables AI Agents to dynamically discover and call various AI tool services deployed on the local network (such as PDF processing, image generation, knowledge base retrieval, etc.).
 
 ### Core Features
 
@@ -91,10 +91,10 @@ AI-LAN Service Discovery is a lightweight, zero-configuration, high-performance 
 # Python
 pip install ai-discover
 ai-discover-agent --config service_config.json
-
+```bash
 # or Rust (cargo)
-cargo install aidis
-aidis --config service_config.json
+cargo install aiecho
+aiecho --config service_config.json
 ```
 
 ### 2. Client Side (AI Scanner)
@@ -110,8 +110,8 @@ ai-scan --output json
 ai-scan --output table
 
 # Rust version
-aidis scan --output json
-aidis scan --output table
+aiecho scan --output json
+aiecho scan --output table
 ```
 
 **Output example:**
@@ -278,9 +278,9 @@ ai-scan --mode active --interval 30
 # Passive listening mode (Python)
 ai-scan --mode passive --watch-file services.json
 
-# Rust version uses aidis command
-aidis scan --output json
-aidis listen --output-file services.json --interval 30
+# Rust version uses aiecho command
+aiecho scan --output json
+aiecho listen --output-file services.json --interval 30
 ```
 
 ---
@@ -302,7 +302,7 @@ pip install -e .
 
 ```bash
 # Install from crates.io
-cargo install aidis
+cargo install aiecho
 
 # or build from source
 cd rust
@@ -351,19 +351,19 @@ for service in services:
 
 ```bash
 # Scan local network, output JSON to stdout
-aidis scan --output json
+aiecho scan --output json
 
 # Scan and output in table format
-aidis scan --output table
+aiecho scan --output table
 
 # Scan and save to file
-aidis scan --output json --output-file services.json
+aiecho scan --output json --output-file services.json
 
 # Scan without fetching manifest (faster)
-aidis scan --no-manifest
+aiecho scan --no-manifest
 
 # Custom timeout
-aidis scan --timeout 5.0
+aiecho scan --timeout 5.0
 ```
 
 ### Example 3: Real-time Service Change Monitoring
