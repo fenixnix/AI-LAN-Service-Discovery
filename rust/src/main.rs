@@ -7,7 +7,6 @@
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 use std::time::Duration;
-use tokio;
 use tracing::{debug, error, info};
 
 use aiecho::{ClientConfig, DiscoveryScanner, DiscoveryServer, ServiceConfig};
