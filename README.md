@@ -20,7 +20,7 @@
   </a>
 </p>
 
----
+***
 
 ## Overview
 
@@ -34,7 +34,7 @@ AIEcho is a lightweight, zero-configuration, high-performance LAN AI microservic
 - 🌐 **Multi-language Support** - Python and Rust native implementation
 - 🔌 **Standardized Interface** - RESTful API + JSON Schema capability description
 
----
+***
 
 ## Quick Start
 
@@ -55,7 +55,7 @@ AIEcho is a lightweight, zero-configuration, high-performance LAN AI microservic
 
 **Start command:**
 
-```bash
+````bash
 # Python
 pip install ai-discover
 ai-discover-agent --config service_config.json
@@ -63,7 +63,7 @@ ai-discover-agent --config service_config.json
 # or Rust (cargo)
 cargo install aiecho
 aiecho --config service_config.json
-```
+````
 
 ### Client Side (AI Scanner)
 
@@ -82,7 +82,7 @@ aiecho scan --output json
 aiecho scan --output table
 ```
 
----
+***
 
 ## Documentation
 
@@ -91,7 +91,7 @@ For more detailed documentation, please refer to the language-specific README fi
 - [English Documentation](README.en.md)
 - [中文文档](README.zh-CN.md)
 
----
+***
 
 ## License
 
