@@ -13,7 +13,9 @@ use tokio::sync::broadcast;
 use tracing::{debug, error, info, warn};
 
 use crate::config::ServiceConfig;
-use crate::protocol::{build_announce, build_discover_res, parse_message, DISCOVER_REQ};
+use crate::protocol::{
+    build_announce, build_discover_res, parse_message, DiscoverResParams, DISCOVER_REQ,
+};
 
 /// Discovery server that handles UDP discovery requests
 pub struct DiscoveryServer {
@@ -154,16 +156,16 @@ impl DiscoveryServer {
             debug!("Discovery request from {}, query_id={}", addr, query_id);
 
             // Build and send response
-            let response = build_discover_res(
+            let response = build_discover_res(DiscoverResParams {
                 query_id,
-                "ok",
-                &config.service_name,
-                &config.service_id,
-                config.http_port,
-                &config.manifest_path,
-                &config.tags,
-                config.priority,
-            );
+                status: "ok",
+                service_name: &config.service_name,
+                service_id: &config.service_id,
+                http_port: config.http_port,
+                manifest_path: &config.manifest_path,
+                tags: &config.tags,
+                priority: config.priority,
+            });
 
             socket
                 .send_to(&response, addr)

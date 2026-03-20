@@ -200,7 +200,7 @@ impl DiscoveryScanner {
     }
 
     /// Fetch manifests for all discovered services concurrently
-    async fn fetch_manifests(&self, services: &mut Vec<DiscoveredService>) {
+    async fn fetch_manifests(&self, services: &mut [DiscoveredService]) {
         debug!("Fetching manifests for {} service(s)", services.len());
 
         let client = reqwest::Client::builder()
@@ -219,20 +219,14 @@ impl DiscoveryScanner {
                     Ok(response) => {
                         if response.status().is_success() {
                             match response.json::<serde_json::Value>().await {
-                                Ok(manifest) => {
-                                    return Some((url, Ok(manifest)));
-                                }
-                                Err(e) => {
-                                    return Some((url, Err(e.to_string())));
-                                }
+                                Ok(manifest) => Some((url, Ok(manifest))),
+                                Err(e) => Some((url, Err(e.to_string()))),
                             }
                         } else {
-                            return Some((url, Err(format!("HTTP {}", response.status()))));
+                            Some((url, Err(format!("HTTP {}", response.status()))))
                         }
                     }
-                    Err(e) => {
-                        return Some((url, Err(e.to_string())));
-                    }
+                    Err(e) => Some((url, Err(e.to_string()))),
                 }
             }));
         }
