@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use std::time::Duration;
 use tracing::{debug, error, info};
 
-use aiecho::{ClientConfig, DiscoveryScanner, DiscoveryServer, ServiceConfig};
+use aiecho::{ClientConfig, DiscoveryScanner, DiscoveryServer, ServiceConfig, discover_services};
 
 /// AI-LAN Service Discovery System
 ///
@@ -27,9 +27,9 @@ struct Cli {
 enum Commands {
     /// Run the discovery agent (service side)
     Agent {
-        /// Service configuration JSON file path
-        #[arg(short, long, value_name = "FILE")]
-        config: PathBuf,
+        /// Root directory to scan for .echo files
+        #[arg(short, long, default_value = ".", value_name = "DIR")]
+        root_path: PathBuf,
 
         /// Enable verbose logging
         #[arg(short, long)]
@@ -105,11 +105,11 @@ async fn main() {
     // Execute command
     match cli.command {
         Commands::Agent {
-            config,
+            root_path,
             verbose: _,
             udp_port,
         } => {
-            run_agent(config, udp_port).await;
+            run_agent(root_path, udp_port).await;
         }
         Commands::Scan {
             output,
@@ -131,48 +131,48 @@ async fn main() {
     }
 }
 
-async fn run_agent(config_path: PathBuf, udp_port: Option<u16>) {
-    // Load configuration
-    let service_configs = match ServiceConfig::from_file(&config_path) {
-        Ok(configs) => configs,
-        Err(e) => {
-            error!("Failed to load configuration: {}", e);
-            std::process::exit(1);
-        }
-    };
-
-    if service_configs.is_empty() {
-        error!("No services found in configuration file");
-        std::process::exit(1);
+async fn run_agent(root_path: PathBuf, udp_port: Option<u16>) {
+    // Scan for .echo files
+    info!("Scanning for .echo files in {}", root_path.display());
+    
+    // Discover services
+    let services = discover_services(&root_path);
+    
+    if services.is_empty() {
+        info!("No services found");
+        return;
     }
-
-    info!(
-        "Found {} service(s) in configuration",
-        service_configs.len()
-    );
-
-    // Override UDP port if specified and start servers
+    
+    info!("Found {} service(s)", services.len());
+    
+    // Start servers for each service
     let mut servers = Vec::new();
-    for mut config in service_configs {
+    for (echo_path, mut service_config) in services {
+        // Override UDP port if specified
         if let Some(port) = udp_port {
-            config.udp_port = port;
+            service_config.udp_port = port;
         }
-
-        info!("Starting discovery agent: {}", config.service_name);
-        info!("  Service ID: {}", config.service_id);
-        info!("  HTTP Port: {}", config.http_port);
-        info!("  UDP Port: {}", config.udp_port);
-        info!("  Announce on startup: {}", config.announce_on_startup);
-
-        let mut server = DiscoveryServer::new(config);
+        
+        info!("Starting discovery agent: {}", service_config.service_name);
+        info!("  Service ID: {}", service_config.service_id);
+        info!("  HTTP Port: {}", service_config.http_port);
+        info!("  UDP Port: {}", service_config.udp_port);
+        info!("  From: {}", echo_path.display());
+        
+        let mut server = DiscoveryServer::new(service_config);
         if let Err(e) = server.start().await {
             error!("Failed to start server: {}", e);
-            std::process::exit(1);
+            continue;
         }
-
+        
         servers.push(server);
     }
-
+    
+    if servers.is_empty() {
+        error!("No servers started");
+        return;
+    }
+    
     info!("All agents started. Press Ctrl+C to stop.");
 
     // Keep running

@@ -49,10 +49,10 @@ def cli():
 
 @cli.command()
 @click.option(
-    "--config", "-c",
+    "--root-path", "-r",
     type=click.Path(exists=True, path_type=Path),
-    required=True,
-    help="Service configuration JSON file path"
+    default=".",
+    help="Root directory to scan for .echo files"
 )
 @click.option(
     "--verbose", "-v",
@@ -65,35 +65,26 @@ def cli():
     default=None,
     help="Override UDP discovery port"
 )
-def agent(config: Path, verbose: bool, udp_port: Optional[int]):
+def agent(root_path: Path, verbose: bool, udp_port: Optional[int]):
     """Run the discovery agent (service side).
     
     This starts a UDP listener that responds to discovery requests
     and announces the service on the network.
     
     Example:
-        ai-discover-agent --config service_config.json
+        ai-discover-agent --root-path ./services
     """
     setup_logging(verbose)
     
     try:
-        # Load configuration
-        console.print(f"[dim]Loading configuration from {config}[/dim]")
-        service_config = ServiceConfig.from_file(config)
+        # Scan for .echo files
+        console.print(f"[dim]Scanning for .echo files in {root_path}[/dim]")
         
-        # Override UDP port if specified
-        if udp_port:
-            service_config.udp_port = udp_port
-        
-        console.print(f"[green]Starting discovery agent:[/green] {service_config.service_name}")
-        console.print(f"  [dim]Service ID:[/dim] {service_config.service_id}")
-        console.print(f"  [dim]HTTP Port:[/dim] {service_config.http_port}")
-        console.print(f"  [dim]UDP Port:[/dim] {service_config.udp_port}")
-        console.print(f"  [dim]Announce on startup:[/dim] {service_config.announce_on_startup}")
-        
-        # Create and start server
-        server = DiscoveryServer(service_config)
-        server.start()
+        # TODO: Implement .echo file scanning logic
+        # 1. Recursively find all .echo files
+        # 2. Validate enable=true and port is occupied
+        # 3. Load manifest.json from same directory
+        # 4. Start discovery server for each valid service
         
         console.print("[green]Agent started. Press Ctrl+C to stop.[/green]")
         
@@ -103,11 +94,11 @@ def agent(config: Path, verbose: bool, udp_port: Optional[int]):
                 input()
         except KeyboardInterrupt:
             console.print("\n[yellow]Stopping agent...[/yellow]")
-            server.stop()
+            # TODO: Stop all running servers
             console.print("[green]Agent stopped.[/green]")
             
-    except FileNotFoundError:
-        console.print(f"[red]Error: Configuration file not found: {config}[/red]")
+    except FileNotFoundError as e:
+        console.print(f"[red]Error: {e}[/red]")
         sys.exit(1)
     except Exception as e:
         console.print(f"[red]Error: {e}[/red]")

@@ -96,25 +96,72 @@ class ServiceConfig(BaseModel):
         return f"{self.base_url}{self.manifest_path}"
 
     @classmethod
-    def from_file(cls, path: str | Path) -> "ServiceConfig":
-        """Load configuration from JSON file.
+    def from_manifest(cls, manifest: dict, http_port: int) -> "ServiceConfig":
+        """Create ServiceConfig from manifest dictionary.
         
         Args:
-            path: Path to JSON configuration file
+            manifest: Manifest dictionary
+            http_port: HTTP service port
             
         Returns:
             ServiceConfig instance
         """
-        import json
-        path = Path(path)
-        if not path.exists():
-            raise FileNotFoundError(f"Configuration file not found: {path}")
-        data = json.loads(path.read_text(encoding="utf-8"))
-        return cls(**data)
+        meta = manifest.get("meta", {})
+        return cls(
+            service_name=meta.get("name", "Unknown Service"),
+            service_id=meta.get("service_id", f"service-{http_port}"),
+            http_port=http_port,
+            manifest_path=manifest.get("endpoints", {}).get("invoke", "/ai_manifest"),
+            tags=[],
+            priority=1
+        )
     
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return self.model_dump()
+
+
+class EchoConfig(BaseModel):
+    """Echo configuration for service discovery.
+    
+    This configuration is loaded from .echo files.
+    
+    Example:
+        ```json
+        {
+            "port": 8080,
+            "enable": true
+        }
+        ```
+    """
+    
+    port: int = Field(
+        ..., 
+        ge=1, 
+        le=65535, 
+        description="HTTP service port"
+    )
+    enable: bool = Field(
+        default=True,
+        description="Whether the service is enabled"
+    )
+
+    @classmethod
+    def from_file(cls, path: str | Path) -> "EchoConfig":
+        """Load configuration from .echo file.
+        
+        Args:
+            path: Path to .echo file
+            
+        Returns:
+            EchoConfig instance
+        """
+        import json
+        path = Path(path)
+        if not path.exists():
+            raise FileNotFoundError(f"Echo file not found: {path}")
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return cls(**data)
 
 
 class ClientConfig(BaseModel):

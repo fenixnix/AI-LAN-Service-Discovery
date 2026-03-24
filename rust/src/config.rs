@@ -103,8 +103,8 @@ impl ServiceConfig {
             return Err(ConfigError::FileNotFound(path.display().to_string()));
         }
 
-        let content =
-            std::fs::read_to_string(path).map_err(|e| ConfigError::IoError(e.to_string()))?;
+        let content = std::fs::read_to_string(path)
+            .map_err(|e| ConfigError::IoError(e.to_string()))?;
 
         // Try to parse as multiple services first
         if let Ok(services_config) = serde_json::from_str::<ServicesConfig>(&content) {
@@ -115,6 +115,21 @@ impl ServiceConfig {
                 Ok(service) => Ok(vec![service]),
                 Err(e) => Err(ConfigError::ParseError(e.to_string())),
             }
+        }
+    }
+
+    /// Create ServiceConfig from manifest
+    pub fn from_manifest(manifest: &Manifest, http_port: u16) -> Self {
+        Self {
+            service_name: manifest.meta.name.clone(),
+            service_id: manifest.meta.service_id.clone(),
+            http_port,
+            manifest_path: manifest.endpoints.invoke.clone(),
+            tags: vec![],
+            priority: 1,
+            udp_port: 53535,
+            announce_on_startup: true,
+            announce_interval: 30,
         }
     }
 
@@ -289,6 +304,55 @@ impl Manifest {
     /// Convert to JSON value
     pub fn to_json(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap()
+    }
+}
+
+/// Echo configuration for service discovery
+///
+/// This configuration is loaded from .echo files.
+///
+/// # Example
+///
+/// ```json
+/// {
+///     "port": 8080,
+///     "enable": true
+/// }
+/// ```
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EchoConfig {
+    /// HTTP service port
+    pub port: u16,
+
+    /// Whether the service is enabled
+    pub enable: bool,
+}
+
+impl EchoConfig {
+    /// Load configuration from .echo file
+    pub fn from_file<P: AsRef<Path>>(path: P) -> std::result::Result<Self, ConfigError> {
+        let path = path.as_ref();
+        if !path.exists() {
+            return Err(ConfigError::FileNotFound(path.display().to_string()));
+        }
+
+        let content = std::fs::read_to_string(path)
+            .map_err(|e| ConfigError::IoError(e.to_string()))?;
+
+        let echo_config = serde_json::from_str(&content)
+            .map_err(|e| ConfigError::ParseError(e.to_string()))?;
+
+        Ok(echo_config)
+    }
+}
+
+impl Default for EchoConfig {
+    fn default() -> Self {
+        Self {
+            port: 8080,
+            enable: true,
+        }
     }
 }
 

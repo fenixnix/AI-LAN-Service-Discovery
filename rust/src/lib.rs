@@ -25,11 +25,13 @@
 //! ```
 
 pub mod config;
+pub mod discoverer;
 pub mod protocol;
 pub mod scanner;
 pub mod server;
 
-pub use config::{ClientConfig, ServiceConfig};
+pub use config::{ClientConfig, ServiceConfig, EchoConfig};
+pub use discoverer::{discover_services, get_local_ip};
 pub use protocol::{
     build_announce, build_discover_req, build_discover_res, build_goodbye, parse_message,
     ServiceEvent, ServiceInfo, DISCOVERY_PORT, DISCOVER_REQ, DISCOVER_RES, PROTOCOL_VERSION,

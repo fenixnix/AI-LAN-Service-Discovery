@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Echo Configuration",
+  "type": "object",
+  "properties": {
+    "port": {
+      "type": "integer",
+      "description": "The port number for the echo service"
+    },
+    "enable": {
+      "type": "boolean",
+      "description": "Whether the echo service is enabled"
+    }
+  },
+  "required": ["port", "enable"]
+}
