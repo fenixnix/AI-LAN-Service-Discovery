@@ -12,9 +12,9 @@ use std::path::{Path, PathBuf};
 use std::fs::File;
 use std::io::Read;
 
-use serde_json;
+use serde_json::Value;
 
-use crate::config::{EchoConfig, ServiceConfig, Manifest};
+use crate::config::{EchoConfig, ServiceConfig};
 
 /// Recursively scan for .echo files
 pub fn scan_echo_files(root_dir: &Path) -> Vec<PathBuf> {
@@ -58,8 +58,9 @@ pub fn is_port_occupied(port: u16) -> bool {
 }
 
 /// Load manifest.json from the same directory as .echo file
-pub fn load_manifest(echo_path: &Path) -> Option<Manifest> {
+pub fn load_manifest(echo_path: &Path) -> Option<Value> {
     let manifest_path = echo_path.parent()?.join("manifest.json");
+    
     if !manifest_path.exists() {
         return None;
     }
@@ -95,10 +96,10 @@ pub fn discover_services(root_dir: &Path) -> Vec<(PathBuf, ServiceConfig)> {
                 // Load manifest or use default
                 let manifest = load_manifest(&echo_path);
                 
-                let service_config = ServiceConfig::from_manifest_or_default(
-                    manifest.as_ref(),
-                    echo_config.port,
+                let service_config = ServiceConfig::from_echo(
                     &echo_path,
+                    manifest,
+                    echo_config.port,
                 );
                 services.push((echo_path, service_config));
             }

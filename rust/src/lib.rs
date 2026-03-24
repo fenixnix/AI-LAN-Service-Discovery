@@ -8,7 +8,7 @@
 //!
 //! - UDP broadcast discovery (port 53535)
 //! - Service announcement on startup
-//! - HTTP Manifest API for capability description
+//! - .echo file based configuration
 //! - Real-time service monitoring
 //! - CLI tools for easy usage
 //!
@@ -16,7 +16,7 @@
 //!
 //! ### As server (service provider)
 //! ```bash
-//! aiecho --config service_config.json
+//! aiecho agent --root-path ./services
 //! ```
 //!
 //! ### As client (AI scanner)

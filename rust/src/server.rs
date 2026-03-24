@@ -158,13 +158,8 @@ impl DiscoveryServer {
             // Build and send response
             let response = build_discover_res(DiscoverResParams {
                 query_id,
-                status: "ok",
-                service_name: &config.service_name,
-                service_id: &config.service_id,
                 http_port: config.http_port,
-                manifest_path: &config.manifest_path,
-                tags: &config.tags,
-                priority: config.priority,
+                manifest_data: &config.manifest_data,
             });
 
             socket
@@ -181,12 +176,8 @@ impl DiscoveryServer {
     /// Send announcement broadcast
     async fn send_announce(&self, socket: &UdpSocket) {
         let msg = build_announce(
-            &self.config.service_id,
-            &self.config.service_name,
             self.config.http_port,
-            &self.config.manifest_path,
-            &self.config.tags,
-            self.config.priority,
+            &self.config.manifest_data,
         );
 
         let broadcast_addr: SocketAddr = format!("255.255.255.255:{}", self.config.udp_port)

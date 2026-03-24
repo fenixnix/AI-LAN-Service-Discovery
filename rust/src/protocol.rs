@@ -69,27 +69,16 @@ pub fn build_discover_req(query_id: Option<&str>) -> Vec<u8> {
 #[derive(Debug)]
 pub struct DiscoverResParams<'a> {
     pub query_id: &'a str,
-    pub status: &'a str,
-    pub service_name: &'a str,
-    pub service_id: &'a str,
     pub http_port: u16,
-    pub manifest_path: &'a str,
-    pub tags: &'a [String],
-    pub priority: u8,
+    pub manifest_data: &'a serde_json::Value,
 }
 
 /// Build discovery response message
 pub fn build_discover_res(params: DiscoverResParams) -> Vec<u8> {
     let payload = serde_json::json!({
         "query_id": params.query_id,
-        "status": params.status,
-        "service_name": params.service_name,
-        "service_id": params.service_id,
-        "http_port": params.http_port,
-        "manifest_path": params.manifest_path,
-        "tags": params.tags,
-        "priority": params.priority,
-        "version": PROTOCOL_VERSION,
+        "port": params.http_port,
+        "manifest": params.manifest_data,
     });
     format!(
         "{}\n{}",
@@ -101,26 +90,17 @@ pub fn build_discover_res(params: DiscoverResParams) -> Vec<u8> {
 
 /// Build service announcement message (online)
 pub fn build_announce(
-    service_id: &str,
-    service_name: &str,
     http_port: u16,
-    manifest_path: &str,
-    tags: &[String],
-    priority: u8,
+    manifest_data: &serde_json::Value,
 ) -> Vec<u8> {
     let payload = serde_json::json!({
         "event": "online",
-        "service_id": service_id,
-        "service_name": service_name,
-        "http_port": http_port,
-        "manifest_path": manifest_path,
-        "tags": tags,
-        "priority": priority,
+        "port": http_port,
+        "manifest": manifest_data,
         "timestamp": std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap()
             .as_secs(),
-        "version": PROTOCOL_VERSION,
     });
     format!(
         "{}\n{}",
@@ -155,15 +135,9 @@ pub fn build_goodbye(service_id: &str, service_name: &str) -> Vec<u8> {
 #[serde(rename_all = "camelCase")]
 pub struct ServiceInfo {
     pub query_id: String,
-    pub status: String,
-    pub service_name: String,
-    pub service_id: String,
-    pub http_port: u16,
-    pub manifest_path: String,
-    pub tags: Vec<String>,
-    pub priority: u8,
+    pub port: u16,
     pub ip: String,
-    pub version: String,
+    pub manifest: serde_json::Value,
 }
 
 impl ServiceInfo {
