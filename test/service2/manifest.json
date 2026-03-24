@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "service_id": "service-2",
+    "name": "Test Service 2",
+    "version": "1.0.0",
+    "description": "Second test service",
+    "author": "Test"
+  },
+  "capabilities": [],
+  "endpoints": {
+    "baseUrl": "http://localhost:8081",
+    "invoke": "/api/v1/invoke"
+  },
+  "auth": {
+    "type": "none"
+  }
+}

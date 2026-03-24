@@ -133,6 +133,31 @@ impl ServiceConfig {
         }
     }
 
+    /// Create ServiceConfig from manifest or use default values
+    pub fn from_manifest_or_default(manifest: Option<&Manifest>, http_port: u16, echo_path: &Path) -> Self {
+        if let Some(manifest) = manifest {
+            return Self::from_manifest(manifest, http_port);
+        }
+        
+        // Use directory name as service name
+        let dir_name = echo_path
+            .file_stem()
+            .and_then(|s| s.to_str())
+            .unwrap_or("unknown");
+        
+        Self {
+            service_name: format!("Service on port {}", http_port),
+            service_id: format!("{}-{}", dir_name, http_port),
+            http_port,
+            manifest_path: "/ai_manifest".to_string(),
+            tags: vec![],
+            priority: 1,
+            udp_port: 53535,
+            announce_on_startup: true,
+            announce_interval: 30,
+        }
+    }
+
     /// Get base URL for the service
     pub fn base_url(&self) -> String {
         format!("http://localhost:{}", self.http_port)
