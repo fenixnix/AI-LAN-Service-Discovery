@@ -87,17 +87,28 @@ pub struct ServiceConfig {
 }
 
 impl ServiceConfig {
-
     /// Create ServiceConfig from raw manifest JSON
     pub fn from_manifest_json(manifest: serde_json::Value, http_port: u16) -> Self {
         let meta = manifest.get("meta");
         let endpoints = manifest.get("endpoints");
 
         Self {
-            service_name: meta.and_then(|m| m.get("name")).and_then(|v| v.as_str()).unwrap_or("Unknown").to_string(),
-            service_id: meta.and_then(|m| m.get("serviceId")).and_then(|v| v.as_str()).unwrap_or("unknown").to_string(),
+            service_name: meta
+                .and_then(|m| m.get("name"))
+                .and_then(|v| v.as_str())
+                .unwrap_or("Unknown")
+                .to_string(),
+            service_id: meta
+                .and_then(|m| m.get("serviceId"))
+                .and_then(|v| v.as_str())
+                .unwrap_or("unknown")
+                .to_string(),
             http_port,
-            manifest_path: endpoints.and_then(|e| e.get("invoke")).and_then(|v| v.as_str()).unwrap_or("/ai_manifest").to_string(),
+            manifest_path: endpoints
+                .and_then(|e| e.get("invoke"))
+                .and_then(|v| v.as_str())
+                .unwrap_or("/ai_manifest")
+                .to_string(),
             tags: vec![],
             priority: 1,
             udp_port: 53535,
@@ -108,12 +119,19 @@ impl ServiceConfig {
     }
 
     /// Create ServiceConfig from .echo file
-    pub fn from_echo(echo_path: &Path, manifest: Option<serde_json::Value>, http_port: u16) -> Self {
+    pub fn from_echo(
+        echo_path: &Path,
+        manifest: Option<serde_json::Value>,
+        http_port: u16,
+    ) -> Self {
         if let Some(manifest) = manifest {
             return Self::from_manifest_json(manifest, http_port);
         }
 
-        let dir_name = echo_path.file_stem().and_then(|s| s.to_str()).unwrap_or("unknown");
+        let dir_name = echo_path
+            .file_stem()
+            .and_then(|s| s.to_str())
+            .unwrap_or("unknown");
 
         Self {
             service_name: format!("Service on port {}", http_port),
@@ -168,7 +186,7 @@ impl Default for ServiceConfig {
 
 /// Client scanner configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "camelCase")]
 pub struct ClientConfig {
     /// UDP discovery port
     #[serde(rename = "udpPort")]
@@ -247,11 +265,11 @@ impl EchoConfig {
             return Err(ConfigError::FileNotFound(path.display().to_string()));
         }
 
-        let content = std::fs::read_to_string(path)
-            .map_err(|e| ConfigError::IoError(e.to_string()))?;
+        let content =
+            std::fs::read_to_string(path).map_err(|e| ConfigError::IoError(e.to_string()))?;
 
-        let echo_config = serde_json::from_str(&content)
-            .map_err(|e| ConfigError::ParseError(e.to_string()))?;
+        let echo_config =
+            serde_json::from_str(&content).map_err(|e| ConfigError::ParseError(e.to_string()))?;
 
         Ok(echo_config)
     }

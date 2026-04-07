@@ -175,10 +175,7 @@ impl DiscoveryServer {
 
     /// Send announcement broadcast
     async fn send_announce(&self, socket: &UdpSocket) {
-        let msg = build_announce(
-            self.config.http_port,
-            &self.config.manifest_data,
-        );
+        let msg = build_announce(self.config.http_port, &self.config.manifest_data);
 
         let broadcast_addr: SocketAddr = format!("255.255.255.255:{}", self.config.udp_port)
             .parse()

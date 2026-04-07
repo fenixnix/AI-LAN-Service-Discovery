@@ -5,7 +5,7 @@ edition = "2021"
 description = "AIEcho System"
 readme = "README.md"
 license = "MIT"
-authors = ["AIEcho Team <team@aiecho.dev>"]
+authors = ["AIEcho Team <57319138@qq.com>"]
 keywords = ["ai", "service-discovery", "lan", "zeroconf", "agent", "scanner"]
 categories = ["network-programming", "development-tools"]
 

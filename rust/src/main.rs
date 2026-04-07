@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use std::time::Duration;
 use tracing::{debug, error, info};
 
-use aiecho::{ClientConfig, DiscoveryScanner, DiscoveryServer, ServiceConfig, discover_services};
+use aiecho::{discover_services, ClientConfig, DiscoveryScanner, DiscoveryServer, ServiceConfig};
 
 /// AI-LAN Service Discovery System
 ///
@@ -134,17 +134,17 @@ async fn main() {
 async fn run_agent(root_path: PathBuf, udp_port: Option<u16>) {
     // Scan for .echo files
     info!("Scanning for .echo files in {}", root_path.display());
-    
+
     // Discover services
     let services = discover_services(&root_path);
-    
+
     if services.is_empty() {
         info!("No services found");
         return;
     }
-    
+
     info!("Found {} service(s)", services.len());
-    
+
     // Start servers for each service
     let mut servers = Vec::new();
     for (echo_path, mut service_config) in services {
@@ -152,27 +152,27 @@ async fn run_agent(root_path: PathBuf, udp_port: Option<u16>) {
         if let Some(port) = udp_port {
             service_config.udp_port = port;
         }
-        
+
         info!("Starting discovery agent: {}", service_config.service_name);
         info!("  Service ID: {}", service_config.service_id);
         info!("  HTTP Port: {}", service_config.http_port);
         info!("  UDP Port: {}", service_config.udp_port);
         info!("  From: {}", echo_path.display());
-        
+
         let mut server = DiscoveryServer::new(service_config);
         if let Err(e) = server.start().await {
             error!("Failed to start server: {}", e);
             continue;
         }
-        
+
         servers.push(server);
     }
-    
+
     if servers.is_empty() {
         error!("No servers started");
         return;
     }
-    
+
     info!("All agents started. Press Ctrl+C to stop.");
 
     // Keep running
@@ -214,14 +214,17 @@ async fn run_scan(output: String, timeout: f64, no_manifest: bool, output_file: 
             // Format output
             match output.as_str() {
                 "json" => {
-                    let result: Vec<serde_json::Value> = services.iter().map(|s| {
-                        serde_json::json!({
-                            "ip": s.ip(),
-                            "port": s.port(),
-                            "base_url": s.base_url(),
-                            "manifest": s.manifest(),
+                    let result: Vec<serde_json::Value> = services
+                        .iter()
+                        .map(|s| {
+                            serde_json::json!({
+                                "ip": s.ip(),
+                                "port": s.port(),
+                                "base_url": s.base_url(),
+                                "manifest": s.manifest(),
+                            })
                         })
-                    }).collect();
+                        .collect();
 
                     let json = serde_json::to_string_pretty(&result).unwrap();
 
@@ -284,13 +287,16 @@ async fn run_listen(output_file: PathBuf, interval: u32, no_manifest: bool) {
         match scanner.scan(Some(!no_manifest)).await {
             Ok(services) => {
                 if !services.is_empty() {
-                    let result: Vec<serde_json::Value> = services.iter().map(|s| {
-                        serde_json::json!({
-                            "ip": s.ip(),
-                            "port": s.port(),
-                            "manifest": s.manifest(),
+                    let result: Vec<serde_json::Value> = services
+                        .iter()
+                        .map(|s| {
+                            serde_json::json!({
+                                "ip": s.ip(),
+                                "port": s.port(),
+                                "manifest": s.manifest(),
+                            })
                         })
-                    }).collect();
+                        .collect();
 
                     let json = serde_json::to_string_pretty(&result).unwrap();
                     let _ = std::fs::write(&output_file, &json);

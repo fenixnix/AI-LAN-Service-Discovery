@@ -89,10 +89,7 @@ pub fn build_discover_res(params: DiscoverResParams) -> Vec<u8> {
 }
 
 /// Build service announcement message (online)
-pub fn build_announce(
-    http_port: u16,
-    manifest_data: &serde_json::Value,
-) -> Vec<u8> {
+pub fn build_announce(http_port: u16, manifest_data: &serde_json::Value) -> Vec<u8> {
     let payload = serde_json::json!({
         "event": "online",
         "port": http_port,
@@ -154,10 +151,7 @@ impl ServiceInfo {
                 .and_then(|v| v.as_str())
                 .unwrap_or("")
                 .to_string(),
-            port: payload
-                .get("port")
-                .and_then(|v| v.as_u64())
-                .unwrap_or(80) as u16,
+            port: payload.get("port").and_then(|v| v.as_u64()).unwrap_or(80) as u16,
             ip: ip.to_string(),
             manifest: payload
                 .get("manifest")
@@ -192,10 +186,7 @@ impl ServiceEvent {
                 .and_then(|v| v.as_str())
                 .unwrap_or("")
                 .to_string(),
-            port: payload
-                .get("port")
-                .and_then(|v| v.as_u64())
-                .unwrap_or(80) as u16,
+            port: payload.get("port").and_then(|v| v.as_u64()).unwrap_or(80) as u16,
             ip: ip.to_string(),
             manifest: payload
                 .get("manifest")
