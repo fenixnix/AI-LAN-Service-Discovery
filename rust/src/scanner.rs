@@ -3,10 +3,7 @@
 //! This module implements the client-side scanner that:
 //! - Sends UDP broadcast discovery requests
 //! - Collects responses from all services
-//! - Fetches service manifests via HTTP
-//! - Returns standardized service information
 
-use std::collections::HashMap;
 use std::net::SocketAddr;
 use std::time::Duration;
 use tokio::net::UdpSocket;
@@ -20,9 +17,6 @@ use crate::protocol::{build_discover_req, parse_message, ServiceInfo, DISCOVER_R
 #[derive(Debug, Clone)]
 pub struct DiscoveredService {
     pub service_info: ServiceInfo,
-    pub manifest: Option<serde_json::Value>,
-    pub manifest_loaded: bool,
-    pub manifest_error: Option<String>,
 }
 
 impl DiscoveredService {
@@ -31,24 +25,9 @@ impl DiscoveredService {
         &self.service_info.ip
     }
 
-    /// Get service HTTP port
+    /// Get service port
     pub fn port(&self) -> u16 {
-        self.service_info.http_port
-    }
-
-    /// Get service name
-    pub fn name(&self) -> &str {
-        &self.service_info.service_name
-    }
-
-    /// Get service ID
-    pub fn service_id(&self) -> &str {
-        &self.service_info.service_id
-    }
-
-    /// Get service tags
-    pub fn tags(&self) -> &[String] {
-        &self.service_info.tags
+        self.service_info.port
     }
 
     /// Get service base URL
@@ -56,9 +35,9 @@ impl DiscoveredService {
         self.service_info.base_url()
     }
 
-    /// Get service manifest URL
-    pub fn manifest_url(&self) -> String {
-        self.service_info.manifest_url()
+    /// Get manifest data
+    pub fn manifest(&self) -> &serde_json::Value {
+        &self.service_info.manifest
     }
 }
 
@@ -81,23 +60,16 @@ impl DiscoveryScanner {
     /// Scan for services on the network
     pub async fn scan(
         &self,
-        fetch_manifest: Option<bool>,
+        _fetch_manifest: Option<bool>,
     ) -> std::result::Result<Vec<DiscoveredService>, ScannerError> {
-        let should_fetch = fetch_manifest.unwrap_or(self.config.fetch_manifest);
-
-        // Phase 1: Broadcast and collect
-        let mut services = self.broadcast_and_collect().await?;
+        // Broadcast and collect responses
+        let services = self.broadcast_and_collect().await?;
 
         if services.is_empty() {
             return Ok(vec![]);
         }
 
         info!("Discovered {} service(s)", services.len());
-
-        // Phase 2: Fetch manifests (concurrent)
-        if should_fetch {
-            self.fetch_manifests(&mut services).await;
-        }
 
         Ok(services)
     }
@@ -135,7 +107,7 @@ impl DiscoveryScanner {
         debug!("Sent discovery request to broadcast address");
 
         // Collect responses with timeout
-        let mut services: HashMap<String, DiscoveredService> = HashMap::new();
+        let mut services: Vec<DiscoveredService> = Vec::new();
         let timeout_duration = Duration::from_secs_f64(self.config.timeout);
         let start = std::time::Instant::now();
 
@@ -150,33 +122,20 @@ impl DiscoveryScanner {
 
                     match parse_message(data) {
                         Ok((cmd, payload)) => {
-                            if cmd == DISCOVER_RES
-                                && payload.get("status").and_then(|v| v.as_str()) == Some("ok")
-                            {
+                            if cmd == DISCOVER_RES {
                                 let service_info = ServiceInfo::from_payload(
                                     &payload,
                                     addr.ip().to_string().as_str(),
                                 );
-                                let service_id = service_info.service_id.clone();
 
-                                if !service_id.is_empty() && !services.contains_key(&service_id) {
-                                    services.insert(
-                                        service_id.clone(),
-                                        DiscoveredService {
-                                            service_info,
-                                            manifest: None,
-                                            manifest_loaded: false,
-                                            manifest_error: None,
-                                        },
-                                    );
+                                debug!(
+                                    "Discovered: {} @ {}:{}",
+                                    service_info.port,
+                                    addr.ip(),
+                                    service_info.port
+                                );
 
-                                    debug!(
-                                        "Discovered: {} @ {}:{}",
-                                        services.get(&service_id).unwrap().name(),
-                                        addr.ip(),
-                                        services.get(&service_id).unwrap().port()
-                                    );
-                                }
+                                services.push(DiscoveredService { service_info });
                             }
                         }
                         Err(e) => {
@@ -196,56 +155,7 @@ impl DiscoveryScanner {
             }
         }
 
-        Ok(services.into_values().collect())
-    }
-
-    /// Fetch manifests for all discovered services concurrently
-    async fn fetch_manifests(&self, services: &mut [DiscoveredService]) {
-        debug!("Fetching manifests for {} service(s)", services.len());
-
-        let client = reqwest::Client::builder()
-            .timeout(Duration::from_secs(3))
-            .build()
-            .unwrap();
-
-        let mut handles = Vec::new();
-
-        for service in services.iter() {
-            let client = client.clone();
-            let url = service.manifest_url();
-
-            handles.push(tokio::spawn(async move {
-                match client.get(&url).send().await {
-                    Ok(response) => {
-                        if response.status().is_success() {
-                            match response.json::<serde_json::Value>().await {
-                                Ok(manifest) => Some((url, Ok(manifest))),
-                                Err(e) => Some((url, Err(e.to_string()))),
-                            }
-                        } else {
-                            Some((url, Err(format!("HTTP {}", response.status()))))
-                        }
-                    }
-                    Err(e) => Some((url, Err(e.to_string()))),
-                }
-            }));
-        }
-
-        for (service, handle) in services.iter_mut().zip(handles.into_iter()) {
-            if let Ok(Some((_url, result))) = handle.await {
-                match result {
-                    Ok(manifest) => {
-                        service.manifest = Some(manifest);
-                        service.manifest_loaded = true;
-                        debug!("Loaded manifest for {}", service.name());
-                    }
-                    Err(e) => {
-                        service.manifest_error = Some(e.clone());
-                        debug!("Failed to fetch manifest for {}: {}", service.name(), e);
-                    }
-                }
-            }
-        }
+        Ok(services)
     }
 }
 

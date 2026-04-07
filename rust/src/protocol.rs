@@ -69,7 +69,7 @@ pub fn build_discover_req(query_id: Option<&str>) -> Vec<u8> {
 #[derive(Debug)]
 pub struct DiscoverResParams<'a> {
     pub query_id: &'a str,
-    pub http_port: u16,
+    pub port: u16,
     pub manifest_data: &'a serde_json::Value,
 }
 
@@ -77,7 +77,7 @@ pub struct DiscoverResParams<'a> {
 pub fn build_discover_res(params: DiscoverResParams) -> Vec<u8> {
     let payload = serde_json::json!({
         "query_id": params.query_id,
-        "port": params.http_port,
+        "port": params.port,
         "manifest": params.manifest_data,
     });
     format!(
@@ -132,7 +132,7 @@ pub fn build_goodbye(service_id: &str, service_name: &str) -> Vec<u8> {
 
 /// Discovered service basic information from UDP response
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "snake_case")]
 pub struct ServiceInfo {
     pub query_id: String,
     pub port: u16,
@@ -143,12 +143,7 @@ pub struct ServiceInfo {
 impl ServiceInfo {
     /// Get base URL for the service
     pub fn base_url(&self) -> String {
-        format!("http://{}:{}", self.ip, self.http_port)
-    }
-
-    /// Get full manifest URL
-    pub fn manifest_url(&self) -> String {
-        format!("{}{}", self.base_url(), self.manifest_path)
+        format!("http://{}:{}", self.ip, self.port)
     }
 
     /// Create ServiceInfo from parsed payload
@@ -159,78 +154,34 @@ impl ServiceInfo {
                 .and_then(|v| v.as_str())
                 .unwrap_or("")
                 .to_string(),
-            status: payload
-                .get("status")
-                .and_then(|v| v.as_str())
-                .unwrap_or("ok")
-                .to_string(),
-            service_name: payload
-                .get("service_name")
-                .and_then(|v| v.as_str())
-                .unwrap_or("")
-                .to_string(),
-            service_id: payload
-                .get("service_id")
-                .and_then(|v| v.as_str())
-                .unwrap_or("")
-                .to_string(),
-            http_port: payload
-                .get("http_port")
+            port: payload
+                .get("port")
                 .and_then(|v| v.as_u64())
                 .unwrap_or(80) as u16,
-            manifest_path: payload
-                .get("manifest_path")
-                .and_then(|v| v.as_str())
-                .unwrap_or("/ai_manifest")
-                .to_string(),
-            tags: payload
-                .get("tags")
-                .and_then(|v| v.as_array())
-                .map(|arr| {
-                    arr.iter()
-                        .filter_map(|v| v.as_str().map(String::from))
-                        .collect()
-                })
-                .unwrap_or_default(),
-            priority: payload
-                .get("priority")
-                .and_then(|v| v.as_u64())
-                .unwrap_or(1) as u8,
             ip: ip.to_string(),
-            version: payload
-                .get("version")
-                .and_then(|v| v.as_str())
-                .unwrap_or(PROTOCOL_VERSION)
-                .to_string(),
+            manifest: payload
+                .get("manifest")
+                .cloned()
+                .unwrap_or(serde_json::Value::Null),
         }
     }
 }
 
 /// Service announcement/goodbye event
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "snake_case")]
 pub struct ServiceEvent {
     pub event: String,
-    pub service_id: String,
-    pub service_name: String,
-    pub http_port: u16,
-    pub manifest_path: String,
-    pub tags: Vec<String>,
-    pub priority: u8,
+    pub port: u16,
     pub ip: String,
+    pub manifest: serde_json::Value,
     pub timestamp: u64,
-    pub version: String,
 }
 
 impl ServiceEvent {
     /// Get base URL for the service
     pub fn base_url(&self) -> String {
-        format!("http://{}:{}", self.ip, self.http_port)
-    }
-
-    /// Get full manifest URL
-    pub fn manifest_url(&self) -> String {
-        format!("{}{}", self.base_url(), self.manifest_path)
+        format!("http://{}:{}", self.ip, self.port)
     }
 
     /// Create ServiceEvent from parsed payload
@@ -241,48 +192,19 @@ impl ServiceEvent {
                 .and_then(|v| v.as_str())
                 .unwrap_or("")
                 .to_string(),
-            service_id: payload
-                .get("service_id")
-                .and_then(|v| v.as_str())
-                .unwrap_or("")
-                .to_string(),
-            service_name: payload
-                .get("service_name")
-                .and_then(|v| v.as_str())
-                .unwrap_or("")
-                .to_string(),
-            http_port: payload
-                .get("http_port")
+            port: payload
+                .get("port")
                 .and_then(|v| v.as_u64())
                 .unwrap_or(80) as u16,
-            manifest_path: payload
-                .get("manifest_path")
-                .and_then(|v| v.as_str())
-                .unwrap_or("/ai_manifest")
-                .to_string(),
-            tags: payload
-                .get("tags")
-                .and_then(|v| v.as_array())
-                .map(|arr| {
-                    arr.iter()
-                        .filter_map(|v| v.as_str().map(String::from))
-                        .collect()
-                })
-                .unwrap_or_default(),
-            priority: payload
-                .get("priority")
-                .and_then(|v| v.as_u64())
-                .unwrap_or(1) as u8,
             ip: ip.to_string(),
+            manifest: payload
+                .get("manifest")
+                .cloned()
+                .unwrap_or(serde_json::Value::Null),
             timestamp: payload
                 .get("timestamp")
                 .and_then(|v| v.as_u64())
                 .unwrap_or(0),
-            version: payload
-                .get("version")
-                .and_then(|v| v.as_str())
-                .unwrap_or(PROTOCOL_VERSION)
-                .to_string(),
         }
     }
 }

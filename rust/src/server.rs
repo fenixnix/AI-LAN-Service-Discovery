@@ -158,7 +158,7 @@ impl DiscoveryServer {
             // Build and send response
             let response = build_discover_res(DiscoverResParams {
                 query_id,
-                http_port: config.http_port,
+                port: config.http_port,
                 manifest_data: &config.manifest_data,
             });
 

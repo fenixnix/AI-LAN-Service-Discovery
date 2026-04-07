@@ -216,13 +216,10 @@ async fn run_scan(output: String, timeout: f64, no_manifest: bool, output_file: 
                 "json" => {
                     let result: Vec<serde_json::Value> = services.iter().map(|s| {
                         serde_json::json!({
-                            "serviceName": s.name(),
-                            "serviceId": s.service_id(),
                             "ip": s.ip(),
                             "port": s.port(),
-                            "tags": s.tags(),
-                            "baseUrl": s.base_url(),
-                            "manifest": if s.manifest_loaded { s.manifest.clone() } else { None },
+                            "base_url": s.base_url(),
+                            "manifest": s.manifest(),
                         })
                     }).collect();
 
@@ -238,12 +235,7 @@ async fn run_scan(output: String, timeout: f64, no_manifest: bool, output_file: 
                 "table" => {
                     println!("\n=== Discovered Services ===\n");
                     for s in &services {
-                        println!("  {} @ {}:{}", s.name(), s.ip(), s.port());
-                        println!("    Tags: {:?}", s.tags());
-                        println!(
-                            "    Manifest: {}",
-                            if s.manifest_loaded { "Yes" } else { "No" }
-                        );
+                        println!("  {}:{}", s.ip(), s.port());
                         println!();
                     }
                 }
@@ -294,12 +286,9 @@ async fn run_listen(output_file: PathBuf, interval: u32, no_manifest: bool) {
                 if !services.is_empty() {
                     let result: Vec<serde_json::Value> = services.iter().map(|s| {
                         serde_json::json!({
-                            "serviceName": s.name(),
-                            "serviceId": s.service_id(),
                             "ip": s.ip(),
                             "port": s.port(),
-                            "tags": s.tags(),
-                            "manifest": if s.manifest_loaded { s.manifest.clone() } else { None },
+                            "manifest": s.manifest(),
                         })
                     }).collect();
 

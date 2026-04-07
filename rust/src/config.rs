@@ -168,7 +168,7 @@ impl Default for ServiceConfig {
 
 /// Client scanner configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "snake_case")]
 pub struct ClientConfig {
     /// UDP discovery port
     #[serde(rename = "udpPort")]
