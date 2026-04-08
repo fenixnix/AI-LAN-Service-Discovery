@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use std::time::Duration;
 use tracing::{debug, error, info};
 
-use aiecho::{discover_services, ClientConfig, DiscoveryScanner, DiscoveryServer, ServiceConfig};
+use aiecho::{discover_services, ClientConfig, DiscoveryScanner, DiscoveryServer};
 
 /// AI-LAN Service Discovery System
 ///

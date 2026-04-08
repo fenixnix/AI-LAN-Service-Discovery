@@ -72,17 +72,16 @@ AIEcho 是一套轻量级、零配置、高性能的局域网 AI 微服务发现
 
 ### 1. 服务端 (Service Provider)
 
-**仅需要一个 JSON 配置文件：**
+**目录结构：**
 
-```json
-{
-  "service_name": "PDF Converter Pro",
-  "service_id": "pdf-converter-001",
-  "http_port": 8080,
-  "manifest_path": "/ai_manifest",
-  "tags": ["pdf", "convert", "tool"],
-  "priority": 10
-}
+```
+my_services/
+├── service_a/
+│   ├── .echo          # {"port": 8080, "enable": true}
+│   └── manifest.json  # 服务能力描述
+└── service_b/
+    ├── .echo          {"port": 8081, "enable": true}
+    └── manifest.json
 ```
 
 **启动命令：**
@@ -90,12 +89,18 @@ AIEcho 是一套轻量级、零配置、高性能的局域网 AI 微服务发现
 ```bash
 # Python
 pip install ai-discover
-ai-discover-agent --config service_config.json
-```bash
-# or Rust (cargo)
+ai-discover-agent --root-path ./my_services
+
+# 或 Rust (cargo)
 cargo install aiecho
-aiecho --config service_config.json
+aiecho agent --root-path ./my_services
 ```
+
+**工作原理：**
+- 启动时自动递归扫描指定目录下的所有 `.echo` 文件
+- 每个 `.echo` 文件只需包含 `port` 和 `enable` 字段
+- 同一目录下必须包含 `manifest.json` 作为服务能力描述
+- 多个服务可以放在不同子目录中，统一管理
 
 ### 2. 客户端 (AI Scanner)
 

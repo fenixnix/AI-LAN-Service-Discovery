@@ -72,17 +72,16 @@ AIEcho is a lightweight, zero-configuration, high-performance LAN AI microservic
 
 ### 1. Server Side (Service Provider)
 
-**Only need a JSON configuration file:**
+**Directory structure:**
 
-```json
-{
-  "service_name": "PDF Converter Pro",
-  "service_id": "pdf-converter-001",
-  "http_port": 8080,
-  "manifest_path": "/ai_manifest",
-  "tags": ["pdf", "convert", "tool"],
-  "priority": 10
-}
+```
+my_services/
+├── service_a/
+│   ├── .echo          # {"port": 8080, "enable": true}
+│   └── manifest.json  # Service capability description
+└── service_b/
+    ├── .echo          {"port": 8081, "enable": true}
+    └── manifest.json
 ```
 
 **Start command:**
@@ -90,12 +89,18 @@ AIEcho is a lightweight, zero-configuration, high-performance LAN AI microservic
 ```bash
 # Python
 pip install ai-discover
-ai-discover-agent --config service_config.json
-```bash
+ai-discover-agent --root-path ./my_services
+
 # or Rust (cargo)
 cargo install aiecho
-aiecho --config service_config.json
+aiecho agent --root-path ./my_services
 ```
+
+**How it works:**
+- Automatically recursively scans all `.echo` files in the specified directory at startup
+- Each `.echo` file only needs to contain `port` and `enable` fields
+- `manifest.json` in the same directory serves as the service capability description
+- Multiple services can be placed in different subdirectories for unified management
 
 ### 2. Client Side (AI Scanner)
 

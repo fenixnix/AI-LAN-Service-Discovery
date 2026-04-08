@@ -6,8 +6,11 @@ description = "AIEcho System"
 readme = "README.md"
 license = "MIT"
 authors = ["AIEcho Team <57319138@qq.com>"]
-keywords = ["ai", "service-discovery", "lan", "zeroconf", "agent", "scanner"]
+keywords = ["ai", "service-discovery", "lan", "zeroconf", "scanner"]
 categories = ["network-programming", "development-tools"]
+documentation = "https://docs.rs/aiecho"
+homepage = "https://github.com/aiecho-team/aiecho"
+repository = "https://github.com/aiecho-team/aiecho"
 
 [dependencies]
 tokio = { version = "1", features = ["full"] }
